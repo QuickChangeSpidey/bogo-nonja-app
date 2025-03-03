@@ -1,0 +1,42 @@
+[
+    {
+        "id": 1,
+        "name": "Curry Delight",
+        "image": "https://via.placeholder.com/150?text=Curry+Delight",
+        "isFavorite": false,
+        "hours": "8 AM - 11 PM",
+        "coupons": 0
+    },
+    {
+        "id": 2,
+        "name": "Tandoori Palace",
+        "image": "https://via.placeholder.com/150?text=Tandoori+Palace",
+        "isFavorite": true,
+        "hours": "10 AM - 11 PM",
+        "coupons": 1
+    },
+    {
+        "id": 3,
+        "name": "Biryani Bowl",
+        "image": "https://via.placeholder.com/150?text=Biryani+Bowl",
+        "isFavorite": false,
+        "hours": "11 AM - 9 PM",
+        "coupons": 1
+    },
+    {
+        "id": 4,
+        "name": "Spice Junction",
+        "image": "https://via.placeholder.com/150?text=Spice+Junction",
+        "isFavorite": true,
+        "hours": "8 AM - 10 PM",
+        "coupons": 5
+    },
+    {
+        "id": 5,
+        "name": "Masala Magic",
+        "image": "https://via.placeholder.com/150?text=Masala+Magic",
+        "isFavorite": true,
+        "hours": "9 AM - 10 PM",
+        "coupons": 4
+    }
+]

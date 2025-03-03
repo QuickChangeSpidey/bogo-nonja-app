@@ -1,0 +1,42 @@
+[
+    {
+        "id": 1,
+        "name": "Golden Dragon",
+        "image": "https://via.placeholder.com/150?text=Golden+Dragon",
+        "isFavorite": true,
+        "hours": "11 AM - 11 PM",
+        "coupons": 1
+    },
+    {
+        "id": 2,
+        "name": "Panda Express",
+        "image": "https://via.placeholder.com/150?text=Panda+Express",
+        "isFavorite": false,
+        "hours": "8 AM - 12 PM",
+        "coupons": 4
+    },
+    {
+        "id": 3,
+        "name": "China Bowl",
+        "image": "https://via.placeholder.com/150?text=China+Bowl",
+        "isFavorite": false,
+        "hours": "7 AM - 12 PM",
+        "coupons": 4
+    },
+    {
+        "id": 4,
+        "name": "Dragon Wok",
+        "image": "https://via.placeholder.com/150?text=Dragon+Wok",
+        "isFavorite": false,
+        "hours": "8 AM - 10 PM",
+        "coupons": 5
+    },
+    {
+        "id": 5,
+        "name": "Noodle King",
+        "image": "https://via.placeholder.com/150?text=Noodle+King",
+        "isFavorite": true,
+        "hours": "8 AM - 8 PM",
+        "coupons": 3
+    }
+]

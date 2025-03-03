@@ -1,0 +1,96 @@
+const restaurantData = [
+  {
+    id: 1,
+    name: "Restaurant A",
+    latitude: 49.2827,
+    longitude: -123.1207,
+    coupons: ["10% off", "Free appetizer", "Free Smells"],
+  },
+  {
+    id: 2,
+    name: "Restaurant B",
+    latitude: 49.2838,
+    longitude: -123.1139,
+    coupons: ["15% off", "Buy 1 Get 1 Free"],
+  },
+  {
+    id: 3,
+    name: "Restaurant C",
+    latitude: 49.2768,
+    longitude: -123.1256,
+    coupons: ["20% off", "$5 off orders above $30", "Buy one drink get one free"],
+  },
+  {
+    id: 4,
+    name: "Restaurant D",
+    latitude: 49.2705,
+    longitude: -123.1357,
+    coupons: ["Free dessert", "Family combo discount"],
+  },
+  {
+    id: 5,
+    name: "Restaurant E",
+    latitude: 49.2815,
+    longitude: -123.1173,
+    coupons: ["Free delivery", "5% off for students"],
+  },
+  {
+    id: 6,
+    name: "Restaurant F",
+    latitude: 49.2854,
+    longitude: -123.1102,
+    coupons: ["Flat $10 off", "Early bird discount"],
+  },
+  {
+    id: 7,
+    name: "Restaurant G",
+    latitude: 49.2876,
+    longitude: -123.1210,
+    coupons: ["Loyalty bonus", "25% off for first-timers"],
+  },
+  // Downtown Toronto Locations
+  {
+    id: 8,
+    name: "Toronto Grill House",
+    latitude: 43.6532,
+    longitude: -79.3832,
+    coupons: ["Free drink with main course", "10% off on weekends"],
+  },
+  {
+    id: 9,
+    name: "Maple Leaf Diner",
+    latitude: 43.6510,
+    longitude: -79.3840,
+    coupons: ["20% off breakfast combo", "Free dessert on orders over $50"],
+  },
+  {
+    id: 10,
+    name: "CN Tower Eats",
+    latitude: 43.6426,
+    longitude: -79.3871,
+    coupons: ["Sky-high dining offer", "15% off for couples"],
+  },
+  {
+    id: 11,
+    name: "Harbourfront Bistro",
+    latitude: 43.6396,
+    longitude: -79.3789,
+    coupons: ["Sunset dinner deal", "Buy 1 drink, get 1 free"],
+  },
+  {
+    id: 12,
+    name: "The Six Cafe",
+    latitude: 43.6478,
+    longitude: -79.3817,
+    coupons: ["Free coffee refill", "5% off for students"],
+  },
+  {
+    id: 13,
+    name: "Downtown Deli Delight",
+    latitude: 43.6543,
+    longitude: -79.3860,
+    coupons: ["Combo lunch deals", "Free side with every meal"],
+  },
+];
+
+export default restaurantData;

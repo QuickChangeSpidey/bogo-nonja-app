@@ -1,0 +1,42 @@
+[
+    {
+        "id": 1,
+        "name": "Burger King",
+        "image": "https://via.placeholder.com/150?text=Burger+King",
+        "isFavorite": false,
+        "hours": "10 AM - 11 PM",
+        "coupons": 0
+    },
+    {
+        "id": 2,
+        "name": "McDonald's",
+        "image": "https://via.placeholder.com/150?text=McDonald's",
+        "isFavorite": true,
+        "hours": "11 AM - 9 PM",
+        "coupons": 1
+    },
+    {
+        "id": 3,
+        "name": "Wendy's",
+        "image": "https://via.placeholder.com/150?text=Wendy's",
+        "isFavorite": true,
+        "hours": "10 AM - 10 PM",
+        "coupons": 5
+    },
+    {
+        "id": 4,
+        "name": "KFC",
+        "image": "https://via.placeholder.com/150?text=KFC",
+        "isFavorite": false,
+        "hours": "8 AM - 11 PM",
+        "coupons": 5
+    },
+    {
+        "id": 5,
+        "name": "Taco Bell",
+        "image": "https://via.placeholder.com/150?text=Taco+Bell",
+        "isFavorite": false,
+        "hours": "11 AM - 11 PM",
+        "coupons": 2
+    }
+]
