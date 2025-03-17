@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useEffect, useRef} from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -10,10 +10,8 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from 'react-native';
-import placesNearMe from '../api/places-near-me';
-import genres from '../api/genres';
-import {RootStackParamList} from '../../App';
-import {StackNavigationProp} from '@react-navigation/stack';
+import { RootStackParamList } from '../../App';
+import { StackNavigationProp } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/Entypo';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../api/redux/store';
@@ -25,127 +23,62 @@ interface HomeScreenProps {
   navigation: HomeScreenNavigationProp;
 }
 
-const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
-  // Refs for horizontal FlatLists
-  const featuredDealsRef = useRef<FlatList>(null);
-  const genreRefs = useRef<Record<string, FlatList | null>>({});
+const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
-    const dispatch = useDispatch<AppDispatch>();
-    const { city, deals, loading, error } = useSelector((state: RootState) => state.deals);
-  
-    useEffect(() => {
-      dispatch(fetchDealsByCityAndCountry({city:'Vancouver',country:'Canada'}));
-    }, [dispatch]);
+  const dispatch = useDispatch<AppDispatch>();
+  const { deals, loading, error } = useSelector((state: RootState) => state.deals);
 
-  const scrollToEnd = (ref: React.RefObject<FlatList>) => {
-    if (ref.current) {
-      ref.current.scrollToEnd({animated: true});
-    }
-  };
+  useEffect(() => {
+    dispatch(fetchDealsByCityAndCountry({ city: 'Vancouver', country: 'Canada' }));
+  }, [dispatch]);
 
-  const setGenreRef = (id: string, ref: FlatList | null) => {
-    genreRefs.current[id] = ref;
-  };
+  const dealCategories = Object.keys(deals);
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={true}>
-        {/* Section: Featured Deals */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Featured Deals</Text>
-          <TouchableOpacity onPress={() => scrollToEnd(featuredDealsRef)}>
-            <Icon name="chevron-right" size={28} color="#28a745" />
-          </TouchableOpacity>
-        </View>
-        <FlatList
-          ref={featuredDealsRef}
-          data={placesNearMe}
-          keyExtractor={item => item.id}
-          horizontal
-          style={{marginHorizontal: 15, paddingLeft: 10, paddingRight: 10}}
-          showsHorizontalScrollIndicator={false}
-          renderItem={({item}) => (
-            <TouchableOpacity
-              style={styles.card}
-              onPress={() => navigation.navigate('RestaurantDetails')}>
-              {item.coupons > 0 && (
-                <View style={styles.ribbonContainer}>
-                  <Text style={styles.ribbonText}>
-                    {item.coupons} Available
-                  </Text>
-                </View>
-              )}
-              <Image source={{uri: item.image}} style={styles.cardImage} />
-              <View style={styles.cardContent}>
-                <Text style={styles.cardTitle}>{item.name}</Text>
-                <Text style={styles.cardSubtitle}>{item.hours}</Text>
-              </View>
-            </TouchableOpacity>
-          )}
-        />
-
-        {/* Section: Genres */}
-        {genres.map(genre => (
-          <View key={genre.id} style={styles.genreSection}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>{genre.genre}</Text>
-              <TouchableOpacity
-                onPress={() =>
-                  scrollToEnd({current: genreRefs.current[genre.id]})
-                }>
+        {dealCategories.map((category) => {
+          const categoryDeals = deals[category];
+          if (categoryDeals.length === 0) return null; 
+          return (
+            <View key={category} style={styles.dealSection}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>{category.replace(/([A-Z])/g, ' $1')}</Text>
                 <Icon name="chevron-right" size={28} color="#28a745" />
-              </TouchableOpacity>
-            </View>
-            <FlatList
-              ref={ref => setGenreRef(genre.id, ref)}
-              data={genre.restaurants}
-              keyExtractor={item => item.id}
-              horizontal
-              style={{marginHorizontal: 15, paddingLeft: 10, paddingRight: 10}}
-              showsHorizontalScrollIndicator={false}
-              renderItem={({item}) => (
-                <TouchableOpacity
-                  style={styles.card}
-                  onPress={() => navigation.navigate('RestaurantDetails')}>
-                  {item.coupons > 0 && (
-                    <View style={styles.ribbonContainer}>
-                      <Text style={styles.ribbonText}>
-                        {item.coupons} Available
+              </View>
+              <FlatList
+                data={categoryDeals}
+                keyExtractor={(item) => item.couponId}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={{ marginHorizontal: 15, paddingLeft: 10, paddingRight: 10 }}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={styles.card}
+                    onPress={() => navigation.navigate('RestaurantDetails', { id: item.locationId })}
+                  >
+                    <Image source={{ uri: item.image }} style={styles.cardImage} />
+                    <View style={styles.cardContent}>
+                      <Text style={styles.cardTitle}>{item.locationName}</Text>
+                      <Text style={styles.cardSubtitle}>{item.address}</Text>
+                      <Text style={styles.couponCode}>Code: {item.code}</Text>
+                      <Text style={styles.expiryDate}>
+                        Expires: {new Date(item.expirationDate).toLocaleDateString()}
                       </Text>
                     </View>
-                  )}
-                  <Image source={{uri: item.image}} style={styles.cardImage} />
-                  <View style={styles.cardContent}>
-                    <Text style={styles.cardTitle}>{item.name}</Text>
-                    <Text style={styles.cardSubtitle}>{item.hours}</Text>
-                  </View>
-                </TouchableOpacity>
-              )}
-            />
-          </View>
-        ))}
+                  </TouchableOpacity>
+                )}
+              />
+            </View>
+          );
+        })}
       </ScrollView>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: '#fff'},
-  greetingContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginHorizontal: 15,
-    marginTop: 20,
-    marginBottom: 10,
-  },
-  greetingText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  headerButton: {
-    padding: 5,
-  },
+  container: { flex: 0.9, backgroundColor: '#fff' },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -153,7 +86,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
     marginTop: 20,
   },
-  sectionTitle: {fontSize: 20, fontWeight: 'bold'},
+  sectionTitle: { fontSize: 20, fontWeight: 'bold', textTransform: 'capitalize' },
+  dealSection: { marginVertical: 15 },
   card: {
     width: 350,
     marginRight: 15,
@@ -169,38 +103,15 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: '#28a745',
   },
-  cardContent: {
-    padding: 12,
-    backgroundColor: '#fff',
-  },
   cardImage: {
     width: '100%',
     height: 130,
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
   },
-  gridItem: {
-    width: '48%',
-    marginBottom: 10,
+  cardContent: {
+    padding: 12,
     backgroundColor: '#fff',
-    borderRadius: 10,
-    overflow: 'hidden',
-    elevation: 3,
-  },
-  ribbonContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    backgroundColor: '#28a745',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderBottomRightRadius: 10,
-    zIndex: 1,
-  },
-  ribbonText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: 'bold',
   },
   cardTitle: {
     fontSize: 16,
@@ -211,14 +122,14 @@ const styles = StyleSheet.create({
     color: '#555',
     marginVertical: 5,
   },
-  genreSection: {
-    marginVertical: 15,
+  couponCode: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#28a745',
   },
-  gridContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    marginHorizontal: 15,
+  expiryDate: {
+    fontSize: 12,
+    color: '#888',
   },
 });
 

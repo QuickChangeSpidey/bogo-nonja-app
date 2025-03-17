@@ -34,7 +34,7 @@ interface DealsState {
 // Initial state
 const initialState: DealsState = {
   city: '',
-  country:'',
+  country: '',
   deals: {},
   loading: false,
   error: null,
