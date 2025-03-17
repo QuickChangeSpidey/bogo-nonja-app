@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useRef} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {
   View,
   Text,
@@ -15,6 +15,9 @@ import genres from '../api/genres';
 import {RootStackParamList} from '../../App';
 import {StackNavigationProp} from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/Entypo';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../api/redux/store';
+import { fetchDealsByCityAndCountry } from '../api/redux/deals-slice';
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Main'>;
 
@@ -26,6 +29,13 @@ const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   // Refs for horizontal FlatLists
   const featuredDealsRef = useRef<FlatList>(null);
   const genreRefs = useRef<Record<string, FlatList | null>>({});
+
+    const dispatch = useDispatch<AppDispatch>();
+    const { city, deals, loading, error } = useSelector((state: RootState) => state.deals);
+  
+    useEffect(() => {
+      dispatch(fetchDealsByCityAndCountry({city:'Vancouver',country:'Canada'}));
+    }, [dispatch]);
 
   const scrollToEnd = (ref: React.RefObject<FlatList>) => {
     if (ref.current) {

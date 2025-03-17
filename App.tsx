@@ -31,6 +31,8 @@ import MapScreen from './src/screens/MapScreen';
 import RestaurantDetailsScreen from './src/screens/RestaurantDetailsScreen';
 // import SearchScreen from './src/screens/SearchScreen';
 import NotificationPermissionScreen from './src/screens/NotificationPermissionScreen';
+import { Provider } from 'react-redux';
+import store from './src/api/redux/store';
 
 // Navigation Types
 export type RootStackParamList = {
@@ -178,6 +180,7 @@ const App = () => {
   };
 
   return (
+    <Provider store={store}>
     <NavigationContainer>
       {isSplashVisible ? (
         <SplashScreen onSplashEnd={handleSplashEnd} />
@@ -347,6 +350,7 @@ const App = () => {
         </>
       )}
     </NavigationContainer>
+    </Provider>
   );
 };
 
