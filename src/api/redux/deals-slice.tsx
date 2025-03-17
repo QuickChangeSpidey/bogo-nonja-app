@@ -9,6 +9,7 @@ interface Deal {
   couponId: string;
   image: string;
   type: string;
+  quantity: number;
   code: string;
   discountPercentage: number;
   discountValue: number;

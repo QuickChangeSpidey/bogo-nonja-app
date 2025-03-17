@@ -39,7 +39,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       <ScrollView showsVerticalScrollIndicator={true}>
         {dealCategories.map((category) => {
           const categoryDeals = deals[category];
-          if (categoryDeals.length === 0) return null; 
+          if (categoryDeals.length === 0) return null;
           return (
             <View key={category} style={styles.dealSection}>
               <View style={styles.sectionHeader}>
@@ -57,7 +57,18 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                     style={styles.card}
                     onPress={() => navigation.navigate('RestaurantDetails', { id: item.locationId })}
                   >
-                    <Image source={{ uri: item.image }} style={styles.cardImage} />
+                    <View style={styles.imageContainer}>
+                      {/* ✅ Green Ribbon for Coupon Quantity */}
+                      {item.quantity > 0 && (
+                        <View style={styles.ribbonContainer}>
+                          <Text style={styles.ribbonText}>{item.quantity} Available</Text>
+                        </View>
+                      )}
+
+                      {/* Restaurant / Coupon Image */}
+                      <Image source={{ uri: item.image }} style={styles.cardImage} />
+                    </View>
+
                     <View style={styles.cardContent}>
                       <Text style={styles.cardTitle}>{item.locationName}</Text>
                       <Text style={styles.cardSubtitle}>{item.address}</Text>
@@ -67,6 +78,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                       </Text>
                     </View>
                   </TouchableOpacity>
+
                 )}
               />
             </View>
@@ -130,6 +142,24 @@ const styles = StyleSheet.create({
   expiryDate: {
     fontSize: 12,
     color: '#888',
+  },
+  imageContainer: {
+    position: 'relative', // Needed for absolute positioning of ribbon
+  },
+  ribbonContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    backgroundColor: '#28a745', // Green Ribbon
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderBottomRightRadius: 10,
+    zIndex: 1,
+  },
+  ribbonText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
   },
 });
 
