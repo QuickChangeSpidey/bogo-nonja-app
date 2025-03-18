@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, TextInput, FlatList, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator, Platform } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, TextInput, FlatList, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator, Platform, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 import apiClient from '../api/apiClient';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -34,13 +34,50 @@ const LocationSearchScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [error, setError] = useState<string>('');
   const [favorites, setFavorites] = useState<string[]>([]); // Store favorite location IDs
 
-  const toggleFavorite = (locationId: string) => {
-    setFavorites((prevFavorites) =>
-      prevFavorites.includes(locationId)
-        ? prevFavorites.filter((id) => id !== locationId) // Remove from favorites
-        : [...prevFavorites, locationId] // Add to favorites
-    );
+  useEffect(() => {
+    fetchFavorites();
+  }, []);
+
+  const fetchFavorites = async () => {
+    try {
+      const response = await apiClient.get('/favorites/locations'); // Assuming API exists for fetching favorites
+      setFavorites(response.data.favorites || []);
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error('Error fetching favorites:', (err as any).response?.data || err.message);
+      } else {
+        console.error('Error fetching favorites:', err);
+      }
+    }
   };
+
+  const toggleFavorite = async (locationId: string) => {
+    const isFavorite = favorites.includes(locationId);
+
+    try {
+      if (isFavorite) {
+        await apiClient.delete(`/favorites/locations/${locationId}`);
+        setFavorites(favorites.filter((id) => id !== locationId));
+        Alert.alert('Removed', 'Location removed from favorites.');
+      } else {
+        await apiClient.post(`/favorites/locations/${locationId}`);
+        setFavorites([...favorites, locationId]);
+        Alert.alert('Added', 'Location added to favorites.');
+      }
+    } catch (err: any) {
+      console.error('Error updating favorite:', err.response?.data || err.message);
+
+      // 🔹 Check for Unauthorized Error (401)
+      if (err.response?.status === 401) {
+        Alert.alert('Session Expired', 'Please log in again.', [
+          { text: 'OK', onPress: () => navigation.navigate('Login') }
+        ]);
+      } else {
+        Alert.alert('Error', 'Could not update favorites.');
+      }
+    }
+  };
+
 
   const fetchLocations = async () => {
     if (!searchQuery.trim()) {
