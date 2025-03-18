@@ -35,6 +35,7 @@ import { Provider } from 'react-redux';
 import store from './src/api/redux/store';
 import { Deal } from './src/api/redux/deals-slice';
 import CouponsList from './src/screens/CouponsList';
+import CouponDetailsScreen2 from './src/screens/CouponDetailsScreen2';
 
 // Navigation Types
 export type RootStackParamList = {
@@ -47,6 +48,7 @@ export type RootStackParamList = {
   Map: undefined;
   CouponsList: { item: { locationId: string; locationName: string } };
   CouponDetails: { coupon?: Deal } | undefined;
+  CouponDetails2: { coupon?: Deal } | undefined;
   Accounts: undefined;
   NotificationPermission: undefined;
 };
@@ -275,6 +277,20 @@ const App = () => {
                   headerTitleStyle: { color: '#28a745' },
                 })}
                 component={CouponDetailsScreen}
+              />
+              <Stack.Screen
+                name="CouponDetails2"
+                options={({ navigation }) => ({
+                  headerTitle: () => <Text style={styles.title}>Bogo Ninja</Text>,
+                  headerLeft: () => (
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                      <Icon name="chevron-left" size={28} color="#28a745" />
+                    </TouchableOpacity>
+                  ),
+                  headerStyle: { backgroundColor: '#fff' },
+                  headerTitleStyle: { color: '#28a745' },
+                })}
+                component={CouponDetailsScreen2}
               />
               <Stack.Screen
                 name="Map"

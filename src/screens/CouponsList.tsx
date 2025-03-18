@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { View, FlatList, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
-import { RouteProp, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import apiClient from '../api/apiClient';
+import { RootStackParamList } from '../../App';
 
-// ✅ Define Types for Route Params
-type RootStackParamList = {
-  CouponsList: { item: { locationId: string; locationName: string } };
-};
 
-type CouponsListScreenRouteProp = RouteProp<RootStackParamList, 'CouponsList'>;
-type CouponsListScreenNavigationProp = StackNavigationProp<RootStackParamList, 'CouponsList'>;
+type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'CouponDetails2'>;
+
+interface HomeScreenProps {
+  navigation: HomeScreenNavigationProp;
+}
 
 // ✅ Define Coupon Interface for Type Safety
 interface Coupon {
@@ -22,6 +21,7 @@ interface Coupon {
   description?: string;
   purchasedItemIds: string[];
   freeItemIds: string[];
+  portionSize: number;
   familyPackItems: string[];
   familyPackPrice: number;
   minimumSpend: number;
@@ -33,8 +33,16 @@ interface Coupon {
   image?: string;
 }
 
-const CouponsList: React.FC<CouponsListScreenNavigationProp> = () => {
-  const route = useRoute<CouponsListScreenRouteProp>();
+interface RouteParams {
+  params: {
+    item: {
+      locationId: string;
+      locationName: string;
+    };
+  };
+}
+
+const CouponsList: React.FC<HomeScreenProps & { route: RouteParams }> = ({ route, navigation }) => {
   const { locationId, locationName } = route.params.item;
 
   const [coupons, setCoupons] = useState<Coupon[]>([]);
@@ -51,7 +59,6 @@ const CouponsList: React.FC<CouponsListScreenNavigationProp> = () => {
 
     try {
       const response = await apiClient.get<Coupon[]>(`/coupons/${locationId}`);
-      console.log('Coupons:', response.data);
       setCoupons(response.data || []);
     } catch (err: any) {
       console.error('Error fetching coupons:', err.response?.status, err.response?.data);
@@ -109,7 +116,8 @@ const CouponsList: React.FC<CouponsListScreenNavigationProp> = () => {
         data={coupons}
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.card}>
+          console.log(item),
+          <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('CouponDetails2', { coupon: item })}>
             <Image source={{ uri: item.image || 'https://via.placeholder.com/100' }} style={styles.cardImage} />
             <View style={styles.cardContent}>
               <Text style={styles.cardTitle}>{formatCouponType(item)}</Text>
