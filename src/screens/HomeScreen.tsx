@@ -30,7 +30,6 @@ interface HomeScreenProps {
 }
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
-
   const [userLocation, setUserLocation] = useState({ latitude: 0, longitude: 0 });
   const GOOGLE_MAPS_API_KEY = 'AIzaSyBxeae0ftXUhPZ8bZWE1-xgaWEkJFKGjek';
   const dispatch = useDispatch<AppDispatch>();

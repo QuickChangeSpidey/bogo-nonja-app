@@ -37,6 +37,7 @@ interface HomeScreenProps {
 
 const MapScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant>();
+  const [locations, setLocations] = useState<any>();
   const [isSearchFilterVisible, setIsSearchFilterVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState(''); // State for search input
   const [isPopupVisible, setIsPopupVisible] = useState(false);
@@ -118,11 +119,29 @@ const MapScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     }
   };
 
+  const getRestaurantData = async (latitude: number, longitude: number) => {
+    try {
+      // Use your custom client:
+      const response = await axios.get('http://localhost:5000/api/find/nearby', {
+        params: {
+          lat: latitude,
+          lng: longitude,
+        },
+      });
+
+      setLocations(response.data);
+      // Do something with response.data (e.g., set state)
+    } catch (error) {
+      console.log('Error fetching restaurants:', error.message);
+    }
+  };
+
   const getCurrentLocation = () => {
     Geolocation.getCurrentPosition(
       position => {
         const { latitude, longitude } = position.coords;
         setUserLocation({ latitude, longitude });
+        getRestaurantData(latitude, longitude);
         if (mapRef.current) {
           mapRef.current.animateCamera({
             center: { latitude, longitude },
@@ -220,34 +239,51 @@ const MapScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           latitudeDelta: 0.05,
           longitudeDelta: 0.05,
         }}>
-        {restaurantData.map(restaurant => (
-          <Marker
-            key={restaurant.id}
-            coordinate={{
-              latitude: restaurant.latitude,
-              longitude: restaurant.longitude,
-            }}
-            title={restaurant.name}
-            onPress={() => {
-              setSelectedRestaurant(restaurant);
-              if (Platform.OS === 'android') {
-                handleMarkerPress(restaurant);
-              }
-            }}>
-            {Platform.OS === 'ios' && <Callout onPress={() => navigation.navigate('CouponDetails')}>
-              <View style={styles.calloutContainer}>
-                <Text style={styles.calloutTitle}>{restaurant.name}</Text>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('CouponDetails')}>
-                  <Text style={styles.calloutLink}>Show Coupons</Text>
-                  <Text style={styles.coupon}>
-                    {restaurant.coupons.length} Available
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </Callout>}
-          </Marker>
-        ))}
+        {locations.map((location:any) => {
+          // Suppose location.geolocation.coordinates = [lng, lat]
+          const [lng, lat] = location.geolocation.coordinates;
+          return (
+            <Marker
+              key={location.locationId}
+              coordinate={{ latitude: lat, longitude: lng }}
+              title={location.name}
+              onPress={() => {
+                setSelectedRestaurant({
+                  // convert location object to the shape you need, if required
+                  id: 1, // or location.locationId
+                  name: location.name,
+                  latitude: lat,
+                  longitude: lng,
+                  coupons: location.coupons.map(c => c.code), // or whatever your existing Restaurant interface requires
+                });
+                if (Platform.OS === 'android') {
+                  handleMarkerPress({
+                    id: 1,
+                    name: location.name,
+                    latitude: lat,
+                    longitude: lng,
+                    coupons: location.coupons.map(c => c.code),
+                  });
+                }
+              }}
+            >
+              {Platform.OS === 'ios' && (
+                <Callout onPress={() => navigation.navigate('CouponDetails')}>
+                  <View style={styles.calloutContainer}>
+                    <Text style={styles.calloutTitle}>{location.name}</Text>
+                    <TouchableOpacity onPress={() => navigation.navigate('CouponDetails')}>
+                      <Text style={styles.calloutLink}>Show Coupons</Text>
+                      <Text style={styles.coupon}>
+                        {location.coupons.length} Available
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </Callout>
+              )}
+            </Marker>
+          );
+        })}
+
       </MapView>
       {/* My location */}
       <TouchableOpacity
