@@ -12,13 +12,34 @@ type RootStackParamList = {
 type CouponsListScreenRouteProp = RouteProp<RootStackParamList, 'CouponsList'>;
 type CouponsListScreenNavigationProp = StackNavigationProp<RootStackParamList, 'CouponsList'>;
 
-const CouponsList: React.FC<CouponsListScreenNavigationProp> = ({navigate}) => {
-  const route = useRoute<CouponsListScreenRouteProp>();
-  const { locationId, locationName } = route.params.item; // ✅ Get locationId from params
+// ✅ Define Coupon Interface for Type Safety
+interface Coupon {
+  _id: string;
+  type: string;
+  code: string;
+  discountPercentage: number;
+  discountValue: number;
+  description?: string;
+  purchasedItemIds: string[];
+  freeItemIds: string[];
+  familyPackItems: string[];
+  familyPackPrice: number;
+  minimumSpend: number;
+  startHour?: number;
+  endHour?: number;
+  comboItems: string[];
+  comboPrice: number;
+  expirationDate: string;
+  image?: string;
+}
 
-  const [coupons, setCoupons] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+const CouponsList: React.FC<CouponsListScreenNavigationProp> = () => {
+  const route = useRoute<CouponsListScreenRouteProp>();
+  const { locationId, locationName } = route.params.item;
+
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
 
   useEffect(() => {
     fetchCoupons();
@@ -29,7 +50,7 @@ const CouponsList: React.FC<CouponsListScreenNavigationProp> = ({navigate}) => {
     setError('');
 
     try {
-      const response = await apiClient.get(`/coupons/${locationId}`);
+      const response = await apiClient.get<Coupon[]>(`/coupons/${locationId}`);
       console.log('Coupons:', response.data);
       setCoupons(response.data || []);
     } catch (err: any) {
@@ -40,9 +61,43 @@ const CouponsList: React.FC<CouponsListScreenNavigationProp> = ({navigate}) => {
     }
   };
 
+  // 🔹 Function to Format Discount
+  const formatDiscount = (coupon: Coupon) => {
+    if (coupon.discountPercentage > 0) {
+      return `${coupon.discountPercentage}% off`;
+    } else if (coupon.discountValue > 0) {
+      return `$${coupon.discountValue} off`;
+    } else if (coupon.familyPackPrice > 0) {
+      return `Family Pack: $${coupon.familyPackPrice}`;
+    } else if (coupon.comboPrice > 0) {
+      return `Combo Deal: $${coupon.comboPrice}`;
+    } else {
+      return 'Special Deal';
+    }
+  };
+
+  // 🔹 Function to Format Coupon Type
+  const formatCouponType = (coupon: Coupon) => {
+    switch (coupon.type) {
+      case 'HappyHour':
+        return `Happy Hour: ${coupon.startHour}:00 - ${coupon.endHour}:00`;
+      case 'FamilyPack':
+        return `Family Pack - Serves ${coupon.portionSize || '?'}`;
+      case 'LimitedTime':
+        return 'Limited Time Offer';
+      case 'ComboDeal':
+        return 'Combo Deal';
+      case 'BOGO':
+        return 'Buy One Get One Free';
+      default:
+        return coupon.type.replace(/([A-Z])/g, ' $1').trim();
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Coupons for {locationName}</Text>
+
       {/* Loading Indicator */}
       {loading && <ActivityIndicator size="large" color="#28a745" />}
 
@@ -57,15 +112,10 @@ const CouponsList: React.FC<CouponsListScreenNavigationProp> = ({navigate}) => {
           <TouchableOpacity style={styles.card}>
             <Image source={{ uri: item.image || 'https://via.placeholder.com/100' }} style={styles.cardImage} />
             <View style={styles.cardContent}>
-              <Text style={styles.cardTitle}>{item.type}</Text>
+              <Text style={styles.cardTitle}>{formatCouponType(item)}</Text>
               <Text style={styles.cardCode}>Code: {item.code}</Text>
-              <Text style={styles.cardDiscount}>
-                {item.discountPercentage > 0
-                  ? `${item.discountPercentage}% off`
-                  : item.discountValue > 0
-                  ? `$${item.discountValue} off`
-                  : 'Special Deal'}
-              </Text>
+              <Text style={styles.cardDiscount}>{formatDiscount(item)}</Text>
+              {item.description ? <Text style={styles.cardDescription}>{item.description}</Text> : null}
               <Text style={styles.cardExpiration}>Expires: {new Date(item.expirationDate).toDateString()}</Text>
             </View>
           </TouchableOpacity>
@@ -85,6 +135,7 @@ const styles = StyleSheet.create({
   cardTitle: { fontSize: 16, fontWeight: 'bold', marginBottom: 5 },
   cardCode: { fontSize: 14, color: '#555' },
   cardDiscount: { fontSize: 14, color: '#28a745', fontWeight: 'bold', marginTop: 5 },
+  cardDescription: { fontSize: 12, color: '#777', marginTop: 3 },
   cardExpiration: { fontSize: 12, color: '#777', marginTop: 3 },
   errorText: { fontSize: 16, color: 'red', textAlign: 'center', marginBottom: 10 },
   emptyText: { fontSize: 16, textAlign: 'center', marginTop: 20, color: '#777' },
