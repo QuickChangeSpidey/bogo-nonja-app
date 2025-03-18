@@ -87,7 +87,7 @@ const CouponsScreen: React.FC<CouponScreenProps> = ({navigation}) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 0.9,
     backgroundColor: '#f9f9f9',
     padding: 20,
   },
