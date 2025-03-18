@@ -33,9 +33,6 @@ const CouponDetailsScreen = ({ route }: { route: RouteParams }) => {
         {/* Header Section */}
         <View style={styles.header}>
           <Text style={styles.couponCode}>Code: {coupon.code}</Text>
-          <TouchableOpacity onPress={toggleFavorite} style={styles.heartIconContainer}>
-            <Icon name="heart" size={24} color={isFavorite ? '#ff0000' : '#ccc'} />
-          </TouchableOpacity>
         </View>
 
         {/* Location & Address */}
