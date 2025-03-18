@@ -21,7 +21,7 @@ const QRScannerScreen: React.FC<HomeScreenProps> = ({navigation}) => {
         style={{flex:1}}
         onReadCode={event => {
           Alert.alert('QR code found', event.nativeEvent.codeStringValue);
-          navigation.navigate('RestaurantDetails');
+          navigation.navigate('CouponDetails');
         }}
         showFrame={true}
         laserColor="#28a745"

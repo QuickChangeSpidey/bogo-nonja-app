@@ -248,11 +248,11 @@ const MapScreen: React.FC<HomeScreenProps> = ({navigation}) => {
                 handleMarkerPress(restaurant);
               }
             }}>
-            {Platform.OS === 'ios' && <Callout onPress={() => navigation.navigate('RestaurantDetails')}>
+            {Platform.OS === 'ios' && <Callout onPress={() => navigation.navigate('CouponDetails')}>
               <View style={styles.calloutContainer}>
                 <Text style={styles.calloutTitle}>{restaurant.name}</Text>
                 <TouchableOpacity
-                  onPress={() => navigation.navigate('RestaurantDetails')}>
+                  onPress={() => navigation.navigate('CouponDetails')}>
                   <Text style={styles.calloutLink}>Show Coupons</Text>
                   <Text style={styles.coupon}>
                     {restaurant.coupons.length} Available
@@ -375,7 +375,7 @@ const MapScreen: React.FC<HomeScreenProps> = ({navigation}) => {
                 <TouchableOpacity
                   style={styles.popupButton}
                   onPress={() => {
-                    navigation.navigate('RestaurantDetails');
+                    navigation.navigate('CouponDetails');
                     closePopup();
                   }}>
                   <Text style={styles.popupButtonText}>Show Coupons</Text>

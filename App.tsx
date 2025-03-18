@@ -28,11 +28,12 @@ import ActivityScreen from './src/screens/ActivityScreen';
 import RecoveryScreen from './src/screens/RecoveryScreen';
 import QRScannerScreen from './src/screens/QRScannerScreen';
 import MapScreen from './src/screens/MapScreen';
-import RestaurantDetailsScreen from './src/screens/RestaurantDetailsScreen';
+import CouponDetailsScreen from './src/screens/CouponDetailsScreen';
 // import SearchScreen from './src/screens/SearchScreen';
 import NotificationPermissionScreen from './src/screens/NotificationPermissionScreen';
 import { Provider } from 'react-redux';
 import store from './src/api/redux/store';
+import { Deal } from './src/api/redux/deals-slice';
 
 // Navigation Types
 export type RootStackParamList = {
@@ -43,7 +44,7 @@ export type RootStackParamList = {
   Recovery: undefined;
   Activity: undefined;
   Map: undefined;
-  RestaurantDetails: undefined;
+  CouponDetails: { coupon?: Deal } | undefined;
   Accounts: undefined;
   NotificationPermission: undefined;
 };
@@ -246,7 +247,7 @@ const App = () => {
               })}
             />
             <Stack.Screen
-              name="RestaurantDetails"
+              name="CouponDetails"
               options={({ navigation }) => ({
                 headerTitle: () => <Text style={styles.title}>Bogo Ninja</Text>,
                 headerLeft: () => (
@@ -257,7 +258,7 @@ const App = () => {
                 headerStyle: { backgroundColor: '#fff' },
                 headerTitleStyle: { color: '#28a745' },
               })}
-              component={RestaurantDetailsScreen}
+              component={CouponDetailsScreen}
             />
             <Stack.Screen
               name="Map"

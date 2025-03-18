@@ -3,7 +3,7 @@ import apiClient from '../apiClient';
 import { Alert } from 'react-native';
 
 // Define the type for a single deal
-interface Deal {
+export interface Deal {
   locationId: string;
   locationName: string;
   couponId: string;
@@ -14,17 +14,21 @@ interface Deal {
   discountPercentage: number;
   discountValue: number;
   expirationDate: string;
+  min: number;
+  purchasedItems: string[]; // List of item names that must be purchased
+  freeItems: string[];      // List of item names given for free
+  comboItems: string[];     // List of item names included in a combo deal
 }
 
 // Define the type for the response structure
-interface DealsResponse {
+export interface DealsResponse {
   city: string;
   country: string;
   deals: Record<string, Deal[]>; // Deals categorized by type
 }
 
 // Define the slice state type
-interface DealsState {
+export interface DealsState {
   city: string;
   country: string;
   deals: Record<string, Deal[]>;
@@ -33,7 +37,7 @@ interface DealsState {
 }
 
 // Initial state
-const initialState: DealsState = {
+export const initialState: DealsState = {
   city: '',
   country: '',
   deals: {},
@@ -42,7 +46,7 @@ const initialState: DealsState = {
 };
 
 // Async thunk: Fetch deals by city
-interface FetchDealsByCityAndCountryArgs {
+export interface FetchDealsByCityAndCountryArgs {
   city: string;
   country: string;
 }

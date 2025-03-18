@@ -32,8 +32,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     dispatch(fetchDealsByCityAndCountry({ city: 'Vancouver', country: 'Canada' }));
   }, [dispatch]);
 
-  const dealCategories = Object.keys(deals);
+  console.log('Deals:', deals);
 
+  const dealCategories = Object.keys(deals);
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={true}>
@@ -46,6 +47,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                 <Text style={styles.sectionTitle}>{category.replace(/([A-Z])/g, ' $1')}</Text>
                 <Icon name="chevron-right" size={28} color="#28a745" />
               </View>
+
               <FlatList
                 data={categoryDeals}
                 keyExtractor={(item) => item.couponId}
@@ -55,7 +57,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                 renderItem={({ item }) => (
                   <TouchableOpacity
                     style={styles.card}
-                    onPress={() => navigation.navigate('RestaurantDetails', { id: item.locationId })}
+                    onPress={() => navigation.navigate('CouponDetails', { coupon: item })}
                   >
                     <View style={styles.imageContainer}>
                       {/* ✅ Green Ribbon for Coupon Quantity */}
@@ -73,12 +75,63 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                       <Text style={styles.cardTitle}>{item.locationName}</Text>
                       <Text style={styles.cardSubtitle}>{item.address}</Text>
                       <Text style={styles.couponCode}>Code: {item.code}</Text>
+
+                      {/* ✅ Coupon Type Specific Details */}
+                      {item.type === 'BOGO' || item.type === 'Buy1Get1FreeItem' ? (
+                        <>
+                          <Text style={styles.cardSubtitle}>
+                            Buy: {item.purchasedItems.join(', ') || 'Any item'}
+                          </Text>
+                          <Text style={styles.cardSubtitle}>
+                            Get: {item.freeItems.join(', ') || 'Any item'}
+                          </Text>
+                        </>
+                      ) : null}
+
+                      {/* ✅ Coupon Type Specific Details */}
+                      {item.type === 'FreeItemWithPurchase' ? (
+                        <>
+                          <Text style={styles.cardSubtitle}>
+                            Buy: {item.purchasedItems.join(', ') || 'Any item'}
+                          </Text>
+                          <Text style={styles.cardSubtitle}>
+                            Get: {item.freeItems.join(', ') || 'Any item'} Free
+                          </Text>
+                          <Text style={styles.cardSubtitle}>
+                            On: {item.min} spent
+                          </Text>
+                        </>
+                      ) : null}
+
+                      {item.type === 'ComboDeal' ? (
+                        <Text style={styles.couponCode}>
+                          Combo: {item.comboItems.join(', ') || 'Multiple items'}
+                        </Text>
+                      ) : null}
+
+                      {item.type === 'DiscountOnSpecificItems' ? (
+                        <Text style={styles.couponCode}>
+                          {item.discountPercentage
+                            ? `Save ${item.discountPercentage}%`
+                            : `Save $${item.discountValue}`} on{' '}
+                          {item.purchasedItems.join(', ')}
+                        </Text>
+                      ) : null}
+
+                      {item.type === 'StorewideFlatDiscount' ||
+                        item.type === 'SpendMoreSaveMore' ? (
+                        <Text style={styles.ribbonText}>
+                          {item.discountPercentage
+                            ? `Save ${item.discountPercentage}%`
+                            : `Save $${item.discountValue}`}
+                        </Text>
+                      ) : null}
+
                       <Text style={styles.expiryDate}>
                         Expires: {new Date(item.expirationDate).toLocaleDateString()}
                       </Text>
                     </View>
                   </TouchableOpacity>
-
                 )}
               />
             </View>
@@ -87,6 +140,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       </ScrollView>
     </SafeAreaView>
   );
+
 };
 
 const styles = StyleSheet.create({

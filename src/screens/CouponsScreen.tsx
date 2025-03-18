@@ -68,7 +68,7 @@ const CouponsScreen: React.FC<CouponScreenProps> = ({navigation}) => {
         data={filteredRestaurants}
         keyExtractor={(item) => item.id + item.name}
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.card} onPress={()=>navigation.navigate('RestaurantDetails')}>
+          <TouchableOpacity style={styles.card} onPress={()=>navigation.navigate('CouponDetails')}>
             <Image source={{ uri: item.image }} style={styles.cardImage} />
             <View style={styles.cardContent}>
               <Text style={styles.cardTitle}>{item.name}</Text>
