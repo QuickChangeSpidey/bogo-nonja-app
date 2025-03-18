@@ -28,6 +28,16 @@ interface HomeScreenProps {
   navigation: HomeScreenNavigationProp;
 }
 
+const getTodayHours = (hoursString: string): string => {
+  const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const today = daysOfWeek[new Date().getDay()]; // Get today’s day abbreviation
+
+  const regex = new RegExp(`${today}:\\s(\\d{1,2}:\\d{2}\\s[APM]{2}\\s*to\\s*\\d{1,2}:\\d{2}\\s[APM]{2})`);
+  const match = hoursString.match(regex);
+
+  return match ? match[1] : "Closed"; // Return found hours or "Closed"
+};
+
 const LocationSearchScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [locations, setLocations] = useState<Location[]>([]);
@@ -148,7 +158,7 @@ const LocationSearchScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
               <View style={styles.cardContent}>
                 <Text style={styles.cardTitle}>{item.locationName}</Text>
                 <Text style={styles.cardAddress}>{item.address}</Text>
-                <Text style={styles.cardHours}>{item.hours}</Text>
+                <Text style={styles.cardHours}>{getTodayHours(item.hours)}</Text>
                 <Text style={styles.couponText}>
                   {item.couponCount > 0 ? `${item.couponCount} Coupons Available` : 'No Coupons Available'}
                 </Text>
