@@ -34,9 +34,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const GOOGLE_MAPS_API_KEY = 'AIzaSyBxeae0ftXUhPZ8bZWE1-xgaWEkJFKGjek';
   const [searchQuery, setSearchQuery] = useState(''); // State for search input
   const [searchResults, setSearchResults] = useState<any[]>([]); // For location suggestions
-  const [city, setCity] = useState<string>('Vancouver'); // For location suggestions
-  const [state, setState] = useState<string>('BC'); // For location suggestions
-  const [country, setCountry] = useState<string>('Canada'); // For location suggestions
+  const [city, setCity] = useState<string>(''); // For location suggestions
+  const [state, setState] = useState<string>(''); // For location suggestions
+  const [country, setCountry] = useState<string>(''); // For location suggestions
   const fetchSearchSuggestions = async (query: string) => {
     if (!query) {
       setSearchResults([]);
@@ -132,8 +132,10 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   };
 
   useEffect(() => {
-    dispatch(fetchDealsByCityAndCountry({ city: city, country: country }));
-  }, [dispatch, city, country, state]);
+    if (city && country) {
+      dispatch(fetchDealsByCityAndCountry({ city, country }));
+    }
+  }, [city, country, state, dispatch]); // Make sure these trigger re-fetching
 
   const formatDateTime = (dateString: string) => {
     if (!dateString) return "N/A"; // Handle missing dates
