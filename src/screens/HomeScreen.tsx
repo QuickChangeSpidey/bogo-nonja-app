@@ -91,7 +91,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     );
   };
 
-  const fetchLocationDetails = async (latitude: number, longitude:number)   => {
+  const fetchLocationDetails = async (latitude: number, longitude: number) => {
     try {
       const response = await fetch(
         `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_MAPS_API_KEY}`
@@ -114,7 +114,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         const state = stateObj ? stateObj.long_name : null;
         const country = countryObj ? countryObj.long_name : null;
         setCity(city);
-        setState(state);  
+        setState(state);
         setCountry(country);
       } else {
         console.warn('Geocoding API error:', data.status);
@@ -248,6 +248,10 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       <ScrollView showsVerticalScrollIndicator={true}>
         {dealCategories.map((category) => {
           const categoryDeals = deals[category];
+          // If no deals exist for this category, skip rendering entirely.
+          if (!categoryDeals || !categoryDeals.length) {
+            return null;
+          }
           return (
             <View key={category} style={styles.dealSection}>
               <View style={styles.sectionHeader}>
@@ -255,7 +259,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                 <Icon name="chevron-right" size={28} color="#28a745" />
               </View>
 
-              {categoryDeals ? <FlatList
+              <FlatList
                 data={categoryDeals}
                 keyExtractor={(item) => item.couponId}
                 horizontal
@@ -365,7 +369,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                     </View>
                   </TouchableOpacity>
                 )}
-              /> : null}
+              />
             </View>
           );
         })}
@@ -527,7 +531,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   ribbonText: {
-    color: '#28a745',
+    color: '#fff',
     fontSize: 12,
     fontWeight: 'bold',
   },
