@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/Entypo';
 import { Deal } from '../api/redux/deals-slice';
 
 interface RouteParams {
@@ -25,7 +24,7 @@ const CouponDetailsScreen = ({ route }: { route: RouteParams }) => {
   };
 
   return (
-<View style={styles.container}>
+    <View style={styles.container}>
       {/* Coupon Image */}
       <Image source={{ uri: coupon.image }} style={styles.couponImage} />
 

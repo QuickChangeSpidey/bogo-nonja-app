@@ -21,7 +21,7 @@ import { Animated, Easing } from 'react-native';
 import LoginScreen from './src/screens/LoginScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
 import HomeScreen from './src/screens/HomeScreen';
-import CouponsScreen from './src/screens/CouponsScreen';
+import LocationSearchScreen from './src/screens/LocationSearchScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import FavoriteScreen from './src/screens/FavoriteScreen';
 import ActivityScreen from './src/screens/ActivityScreen';
@@ -130,7 +130,7 @@ const MainTabs = () => (
     />
     <Tab.Screen
       name="Search"
-      component={CouponsScreen}
+      component={LocationSearchScreen}
       options={{ headerShown: false }}
     />
     <Tab.Screen
