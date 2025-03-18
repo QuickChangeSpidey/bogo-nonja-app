@@ -35,7 +35,7 @@ const LocationSearchScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [favorites, setFavorites] = useState<string[]>([]); // Store favorite location IDs
 
   useEffect(() => {
-    fetchFavorites();
+    // fetchFavorites();
   }, []);
 
   const fetchFavorites = async () => {
