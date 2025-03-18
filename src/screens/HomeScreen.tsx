@@ -168,7 +168,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                 <Icon name="chevron-right" size={28} color="#28a745" />
               </View>
 
-              <FlatList
+              {categoryDeals ? <FlatList
                 data={categoryDeals}
                 keyExtractor={(item) => item.couponId}
                 horizontal
@@ -278,7 +278,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                     </View>
                   </TouchableOpacity>
                 )}
-              />
+              />: null}
             </View>
           );
         })}
