@@ -34,6 +34,7 @@ import NotificationPermissionScreen from './src/screens/NotificationPermissionSc
 import { Provider } from 'react-redux';
 import store from './src/api/redux/store';
 import { Deal } from './src/api/redux/deals-slice';
+import CouponsList from './src/screens/CouponsList';
 
 // Navigation Types
 export type RootStackParamList = {
@@ -44,6 +45,7 @@ export type RootStackParamList = {
   Recovery: undefined;
   Activity: undefined;
   Map: undefined;
+  CouponsList: { item: { locationId: string; locationName: string } };
   CouponDetails: { coupon?: Deal } | undefined;
   Accounts: undefined;
   NotificationPermission: undefined;
@@ -182,175 +184,189 @@ const App = () => {
 
   return (
     <Provider store={store}>
-    <NavigationContainer>
-      {isSplashVisible ? (
-        <SplashScreen onSplashEnd={handleSplashEnd} />
-      ) : (
-        <>
-          <Stack.Navigator initialRouteName="Main">
-            <Stack.Screen
-              name="Main"
-              component={MainTabs}
-              options={({ navigation }) => ({
-                headerBackVisible: false,
-                headerRight: () => (
+      <NavigationContainer>
+        {isSplashVisible ? (
+          <SplashScreen onSplashEnd={handleSplashEnd} />
+        ) : (
+          <>
+            <Stack.Navigator initialRouteName="Main">
+              <Stack.Screen
+                name="Main"
+                component={MainTabs}
+                options={({ navigation }) => ({
+                  headerBackVisible: false,
+                  headerRight: () => (
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate('Accounts')}>
+                      <Icon name="user" size={25} color="#28a745" />
+                    </TouchableOpacity>
+                  ),
+                  headerTitle: () => <Text style={styles.title}>Bogo Ninja</Text>,
+                  headerStyle: { backgroundColor: '#fff' },
+                  headerTitleStyle: { color: '#28a745' },
+                })}
+              />
+              <Stack.Screen
+                name="Login"
+                component={LoginScreen}
+                options={({ }) => ({
+                  headerShown: false,
+                })}
+              />
+              <Stack.Screen
+                name="NotificationPermission"
+                component={NotificationPermissionScreen}
+                options={({ }) => ({
+                  headerShown: false,
+                })}
+              />
+              <Stack.Screen
+                name="Register"
+                component={RegisterScreen}
+                options={({ navigation }) => ({
+                  headerTitle: () => <Text style={styles.title}>Bogo Ninja</Text>,
+                  headerLeft: () => (
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                      <Icon name="chevron-left" size={28} color="#28a745" />
+                    </TouchableOpacity>
+                  ),
+                  headerStyle: { backgroundColor: '#fff' },
+                  headerTitleStyle: { color: '#28a745' },
+                })}
+              />
+              <Stack.Screen
+                name="CouponsList"
+                component={CouponsList}
+                options={({ navigation }) => ({
+                  headerTitle: () => <Text style={styles.title}>Bogo Ninja</Text>,
+                  headerLeft: () => (
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                      <Icon name="chevron-left" size={28} color="#28a745" />
+                    </TouchableOpacity>
+                  ),
+                  headerStyle: { backgroundColor: '#fff' },
+                  headerTitleStyle: { color: '#28a745' },
+                })}
+              />
+              <Stack.Screen
+                name="Recovery"
+                component={RecoveryScreen}
+                options={({ navigation }) => ({
+                  headerTitle: () => <Text style={styles.title}>Bogo Ninja</Text>,
+                  headerLeft: () => (
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                      <Icon name="chevron-left" size={28} color="#28a745" />
+                    </TouchableOpacity>
+                  ),
+                  headerStyle: { backgroundColor: '#fff' },
+                  headerTitleStyle: { color: '#28a745' },
+                })}
+              />
+              <Stack.Screen
+                name="CouponDetails"
+                options={({ navigation }) => ({
+                  headerTitle: () => <Text style={styles.title}>Bogo Ninja</Text>,
+                  headerLeft: () => (
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                      <Icon name="chevron-left" size={28} color="#28a745" />
+                    </TouchableOpacity>
+                  ),
+                  headerStyle: { backgroundColor: '#fff' },
+                  headerTitleStyle: { color: '#28a745' },
+                })}
+                component={CouponDetailsScreen}
+              />
+              <Stack.Screen
+                name="Map"
+                options={({ navigation }) => ({
+                  headerLeft: () => (
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                      <Icon name="chevron-left" size={28} color="#28a745" />
+                    </TouchableOpacity>
+                  ),
+                  headerStyle: { backgroundColor: '#fff' },
+                  headerTitleStyle: { color: '#28a745' },
+                })}
+                component={MapScreen}
+              />
+              <Stack.Screen
+                name="Activity"
+                component={ActivityScreen}
+                options={({ navigation }) => ({
+                  headerTitle: () => <Text style={styles.title}>Bogo Ninja</Text>,
+                  headerLeft: () => (
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                      <Icon name="chevron-left" size={28} color="#28a745" />
+                    </TouchableOpacity>
+                  ),
+                  headerStyle: { backgroundColor: '#fff' },
+                  headerTitleStyle: { color: '#28a745' },
+                })}
+              />
+              <Stack.Screen
+                name="Accounts"
+                component={SettingsScreen}
+                options={({ navigation }) => ({
+                  headerTitle: () => <Text style={styles.title}>Bogo Ninja</Text>,
+                  headerLeft: () => (
+                    <TouchableOpacity onPress={() => navigation.navigate('Main')}>
+                      <Icon name="chevron-left" size={28} color="#28a745" />
+                    </TouchableOpacity>
+                  ),
+                  headerStyle: { backgroundColor: '#fff' },
+                  headerTitleStyle: { color: '#28a745' },
+                })}
+              />
+            </Stack.Navigator>
+
+            {/* Phone Modal */}
+            <Modal
+              visible={isPhoneModalVisible}
+              transparent
+              animationType="slide">
+              <View style={styles.modalContainer}>
+                <View style={styles.modalContent}>
+                  {/* Close Button */}
                   <TouchableOpacity
-                    onPress={() => navigation.navigate('Accounts')}>
-                    <Icon name="user" size={25} color="#28a745" />
+                    style={styles.modalCloseButton}
+                    onPress={handleSkip}>
+                    <Icon name="cross" size={30} color="#28a745" />
                   </TouchableOpacity>
-                ),
-                headerTitle: () => <Text style={styles.title}>Bogo Ninja</Text>,
-                headerStyle: { backgroundColor: '#fff' },
-                headerTitleStyle: { color: '#28a745' },
-              })}
-            />
-            <Stack.Screen
-              name="Login"
-              component={LoginScreen}
-              options={({ }) => ({
-                headerShown: false,
-              })}
-            />
-            <Stack.Screen
-              name="NotificationPermission"
-              component={NotificationPermissionScreen}
-              options={({ }) => ({
-                headerShown: false,
-              })}
-            />
-            <Stack.Screen
-              name="Register"
-              component={RegisterScreen}
-              options={({ navigation }) => ({
-                headerTitle: () => <Text style={styles.title}>Bogo Ninja</Text>,
-                headerLeft: () => (
-                  <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Icon name="chevron-left" size={28} color="#28a745" />
-                  </TouchableOpacity>
-                ),
-                headerStyle: { backgroundColor: '#fff' },
-                headerTitleStyle: { color: '#28a745' },
-              })}
-            />
-            <Stack.Screen
-              name="Recovery"
-              component={RecoveryScreen}
-              options={({ navigation }) => ({
-                headerTitle: () => <Text style={styles.title}>Bogo Ninja</Text>,
-                headerLeft: () => (
-                  <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Icon name="chevron-left" size={28} color="#28a745" />
-                  </TouchableOpacity>
-                ),
-                headerStyle: { backgroundColor: '#fff' },
-                headerTitleStyle: { color: '#28a745' },
-              })}
-            />
-            <Stack.Screen
-              name="CouponDetails"
-              options={({ navigation }) => ({
-                headerTitle: () => <Text style={styles.title}>Bogo Ninja</Text>,
-                headerLeft: () => (
-                  <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Icon name="chevron-left" size={28} color="#28a745" />
-                  </TouchableOpacity>
-                ),
-                headerStyle: { backgroundColor: '#fff' },
-                headerTitleStyle: { color: '#28a745' },
-              })}
-              component={CouponDetailsScreen}
-            />
-            <Stack.Screen
-              name="Map"
-              options={({ navigation }) => ({
-                headerLeft: () => (
-                  <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Icon name="chevron-left" size={28} color="#28a745" />
-                  </TouchableOpacity>
-                ),
-                headerStyle: { backgroundColor: '#fff' },
-                headerTitleStyle: { color: '#28a745' },
-              })}
-              component={MapScreen}
-            />
-            <Stack.Screen
-              name="Activity"
-              component={ActivityScreen}
-              options={({ navigation }) => ({
-                headerTitle: () => <Text style={styles.title}>Bogo Ninja</Text>,
-                headerLeft: () => (
-                  <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Icon name="chevron-left" size={28} color="#28a745" />
-                  </TouchableOpacity>
-                ),
-                headerStyle: { backgroundColor: '#fff' },
-                headerTitleStyle: { color: '#28a745' },
-              })}
-            />
-            <Stack.Screen
-              name="Accounts"
-              component={SettingsScreen}
-              options={({ navigation }) => ({
-                headerTitle: () => <Text style={styles.title}>Bogo Ninja</Text>,
-                headerLeft: () => (
-                  <TouchableOpacity onPress={() => navigation.navigate('Main')}>
-                    <Icon name="chevron-left" size={28} color="#28a745" />
-                  </TouchableOpacity>
-                ),
-                headerStyle: { backgroundColor: '#fff' },
-                headerTitleStyle: { color: '#28a745' },
-              })}
-            />
-          </Stack.Navigator>
 
-          {/* Phone Modal */}
-          <Modal
-            visible={isPhoneModalVisible}
-            transparent
-            animationType="slide">
-            <View style={styles.modalContainer}>
-              <View style={styles.modalContent}>
-                {/* Close Button */}
-                <TouchableOpacity
-                  style={styles.modalCloseButton}
-                  onPress={handleSkip}>
-                  <Icon name="cross" size={30} color="#28a745" />
-                </TouchableOpacity>
+                  {/* Image Section */}
+                  <View style={styles.modalImageContainer}>
+                    <Image
+                      source={require('../CustomerApp/src/assets/deals-banner.png')} // Replace with your image path
+                      style={styles.modalImage}
+                      resizeMode="cover"
+                    />
+                  </View>
 
-                {/* Image Section */}
-                <View style={styles.modalImageContainer}>
-                  <Image
-                    source={require('../CustomerApp/src/assets/deals-banner.png')} // Replace with your image path
-                    style={styles.modalImage}
-                    resizeMode="cover"
-                  />
-                </View>
-
-                {/* Text & Input Section */}
-                <View style={styles.modalBody}>
-                  <Text style={styles.modalTitle}>
-                    Get the Best Deals Nearby!
-                  </Text>
-                  <TextInput
-                    style={styles.modalInput}
-                    placeholder="Enter your phone number"
-                    keyboardType="phone-pad"
-                    value={phoneNumber}
-                    onChangeText={setPhoneNumber}
-                  />
-                  {/* Centered Submit Button */}
-                  <TouchableOpacity
-                    style={styles.modalSubmitButton}
-                    onPress={handlePhoneSubmit}>
-                    <Text style={styles.modalSubmitButtonText}>Submit</Text>
-                  </TouchableOpacity>
+                  {/* Text & Input Section */}
+                  <View style={styles.modalBody}>
+                    <Text style={styles.modalTitle}>
+                      Get the Best Deals Nearby!
+                    </Text>
+                    <TextInput
+                      style={styles.modalInput}
+                      placeholder="Enter your phone number"
+                      keyboardType="phone-pad"
+                      value={phoneNumber}
+                      onChangeText={setPhoneNumber}
+                    />
+                    {/* Centered Submit Button */}
+                    <TouchableOpacity
+                      style={styles.modalSubmitButton}
+                      onPress={handlePhoneSubmit}>
+                      <Text style={styles.modalSubmitButtonText}>Submit</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
-            </View>
-          </Modal>
-        </>
-      )}
-    </NavigationContainer>
+            </Modal>
+          </>
+        )}
+      </NavigationContainer>
     </Provider>
   );
 };

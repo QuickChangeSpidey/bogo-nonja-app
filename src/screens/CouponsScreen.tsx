@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, TextInput, FlatList, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator, Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 import apiClient from '../api/apiClient';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../../App';
 
 // ✅ Define API response types
 interface Location {
@@ -18,7 +20,13 @@ interface ApiResponse {
   results: Location[];
 }
 
-const CouponsScreen: React.FC = () => {
+type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Main'>;
+
+interface HomeScreenProps {
+  navigation: HomeScreenNavigationProp;
+}
+
+const CouponsScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -73,7 +81,7 @@ const CouponsScreen: React.FC = () => {
         data={locations}
         keyExtractor={(item) => item.locationId}
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.card}>
+          <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('CouponsList', { item: item })}>
             <Image source={{ uri: item.image }} style={styles.cardImage} />
             <View style={styles.cardContent}>
               <Text style={styles.cardTitle}>{item.locationName}</Text>
