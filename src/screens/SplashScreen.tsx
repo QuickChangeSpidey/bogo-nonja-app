@@ -25,13 +25,13 @@ const SplashScreen: React.FC<Props> = ({ navigation }) => {
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 2000,
+        duration: 1000,
         easing: Easing.ease,
         useNativeDriver: true,
       }),
       Animated.timing(scaleAnim, {
         toValue: 1,
-        duration: 2000,
+        duration: 1000,
         easing: Easing.bounce,
         useNativeDriver: true,
       }),

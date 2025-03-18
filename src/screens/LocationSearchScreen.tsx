@@ -5,6 +5,7 @@ import apiClient from '../api/apiClient';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../App';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // ✅ Define API response types
 interface Location {
@@ -35,7 +36,7 @@ const LocationSearchScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [favorites, setFavorites] = useState<string[]>([]); // Store favorite location IDs
 
   useEffect(() => {
-    // fetchFavorites();
+    fetchFavorites();
   }, []);
 
   const fetchFavorites = async () => {

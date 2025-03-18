@@ -68,20 +68,20 @@ const SplashScreen = ({ navigation, onSplashEnd }: any) => {
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 2000,
+        duration: 1000,
         easing: Easing.ease,
         useNativeDriver: true,
       }),
       Animated.timing(scaleAnim, {
         toValue: 1,
-        duration: 2000,
+        duration: 1000,
         easing: Easing.bounce,
         useNativeDriver: true,
       }),
     ]).start(() => {
       setTimeout(() => {
         onSplashEnd();
-      }, 3000);
+      }, 1000);
     });
   }, [fadeAnim, scaleAnim]);
 
@@ -165,7 +165,7 @@ const App = () => {
 
   const handleSplashEnd = () => {
     setSplashVisible(false);
-    setPhoneModalVisible(true); // Show modal after splash ends
+    // setPhoneModalVisible(true); // Show modal after splash ends
   };
 
   const handlePhoneSubmit = () => {

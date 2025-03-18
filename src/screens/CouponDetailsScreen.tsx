@@ -16,12 +16,6 @@ const formatDateTime = (dateTime: string | Date) => {
 
 const CouponDetailsScreen = ({ route }: { route: RouteParams }) => {
   const { coupon } = route.params;
-  const [isFavorite, setIsFavorite] = useState(false);
-
-  // Toggle favorite state
-  const toggleFavorite = () => {
-    setIsFavorite(prevState => !prevState);
-  };
 
   return (
     <View style={styles.container}>
