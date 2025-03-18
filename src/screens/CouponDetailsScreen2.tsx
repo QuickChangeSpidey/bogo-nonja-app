@@ -71,16 +71,16 @@ const CouponDetailsScreen2 = ({ route }: { route: RouteParams }) => {
 
         {coupon.type === 'HappyHour' && (
           <>
-            <Text style={styles.details}>Start: {coupon.startHour}</Text>
-            <Text style={styles.details}>End: {coupon.endHour}</Text>
+            <Text style={styles.details}>Start: {coupon.startHour} hour</Text>
+            <Text style={styles.details}>End: {coupon.endHour} hour</Text>
           </>
         )}
 
         {coupon.type === 'LimitedTime' && (
           <>
             <Text style={styles.details}>{coupon.description}</Text>
-            <Text style={styles.details}>Start Time: {formatDateTime(coupon.startTime||'')}</Text>
-            <Text style={styles.details}>End Time: {formatDateTime(coupon.endTime||'')}</Text>
+            <Text style={styles.details}>Start Time: {formatDateTime(coupon.startTime || '')}</Text>
+            <Text style={styles.details}>End Time: {formatDateTime(coupon.endTime || '')}</Text>
 
           </>
         )}
@@ -91,6 +91,10 @@ const CouponDetailsScreen2 = ({ route }: { route: RouteParams }) => {
 
         {coupon.type === 'FamilyPack' && (
           <Text style={styles.details}>Family Pack: {getItemNames(coupon.familyPackItems)} for ${coupon.familyPackPrice} with portion size {coupon.portionSize}</Text>
+        )}
+
+        {coupon.type === 'DiscountOnSpecificItems' && (
+          <Text style={styles.details}>${coupon.discountPercentage} on {getItemNames(coupon.purchasedItemIds)}</Text>
         )}
 
         {coupon.discountPercentage > 0 && (

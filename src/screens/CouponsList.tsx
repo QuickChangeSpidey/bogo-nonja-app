@@ -59,6 +59,7 @@ const CouponsList: React.FC<HomeScreenProps & { route: RouteParams }> = ({ route
 
     try {
       const response = await apiClient.get<Coupon[]>(`/coupons/${locationId}`);
+      console.log('Coupons:', response.data);
       setCoupons(response.data || []);
     } catch (err: any) {
       console.error('Error fetching coupons:', err.response?.status, err.response?.data);
@@ -134,7 +135,7 @@ const CouponsList: React.FC<HomeScreenProps & { route: RouteParams }> = ({ route
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f9f9f9', padding: 20 },
+  container: { flex: 0.9, backgroundColor: '#f9f9f9', padding: 20 },
   header: { fontSize: 20, fontWeight: 'bold', textAlign: 'center', marginBottom: 15 },
   card: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', padding: 10, marginBottom: 10, elevation: 2 },
   cardImage: { width: 80, height: 80, borderRadius: 10 },

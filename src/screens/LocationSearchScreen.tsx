@@ -45,9 +45,9 @@ const LocationSearchScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [error, setError] = useState<string>('');
   const [favorites, setFavorites] = useState<string[]>([]); // Store favorite location IDs
 
-  useEffect(() => {
-    fetchFavorites();
-  }, []);
+  // useEffect(() => {
+  //   fetchFavorites();
+  // }, []);
 
   const fetchFavorites = async () => {
     try {
@@ -172,7 +172,7 @@ const LocationSearchScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f9f9f9', padding: 20 },
+  container: { flex: 0.9, backgroundColor: '#f9f9f9', padding: 20 },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
