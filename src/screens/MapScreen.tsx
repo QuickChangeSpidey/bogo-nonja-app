@@ -39,9 +39,6 @@ const MapScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant>();
   const [isSearchFilterVisible, setIsSearchFilterVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState(''); // State for search input
-  const [selectedDealType, setSelectedDealType] = useState<string | null>(null);
-  const [distanceRange, setDistanceRange] = useState<number>(5); // Default distance in kilometers
-  const [selectedExpiry, setSelectedExpiry] = useState<string | null>(null);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [popupRestaurant, setPopupRestaurant] = useState<Restaurant | null>(
     null,
