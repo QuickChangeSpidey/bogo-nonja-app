@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -13,10 +13,10 @@ import {
   PermissionsAndroid,
   FlatList,
 } from 'react-native';
-import MapView, {Callout, Marker} from 'react-native-maps';
+import MapView, { Callout, Marker } from 'react-native-maps';
 import restaurantData from '../api/restaurants';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {RootStackParamList} from '../../App';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../../App';
 import Icon from 'react-native-vector-icons/Entypo';
 import axios from 'axios';
 import Geolocation from '@react-native-community/geolocation';
@@ -35,7 +35,7 @@ interface HomeScreenProps {
   navigation: HomeScreenNavigationProp;
 }
 
-const MapScreen: React.FC<HomeScreenProps> = ({navigation}) => {
+const MapScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant>();
   const [isSearchFilterVisible, setIsSearchFilterVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState(''); // State for search input
@@ -121,11 +121,11 @@ const MapScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   const getCurrentLocation = () => {
     Geolocation.getCurrentPosition(
       position => {
-        const {latitude, longitude} = position.coords;
-        setUserLocation({latitude, longitude});
+        const { latitude, longitude } = position.coords;
+        setUserLocation({ latitude, longitude });
         if (mapRef.current) {
           mapRef.current.animateCamera({
-            center: {latitude, longitude},
+            center: { latitude, longitude },
             zoom: 15,
           });
         }
@@ -154,9 +154,9 @@ const MapScreen: React.FC<HomeScreenProps> = ({navigation}) => {
         },
       );
       if (response.data.status === 'OK') {
-        const {lat, lng} = response.data.result.geometry.location;
+        const { lat, lng } = response.data.result.geometry.location;
         mapRef.current?.animateCamera({
-          center: {latitude: lat, longitude: lng},
+          center: { latitude: lat, longitude: lng },
           zoom: 15,
         });
         setIsSearchFilterVisible(false);
@@ -189,7 +189,7 @@ const MapScreen: React.FC<HomeScreenProps> = ({navigation}) => {
       );
 
       if (response.data.status === 'OK') {
-        const {lat, lng} = response.data.results[0].geometry.location;
+        const { lat, lng } = response.data.results[0].geometry.location;
         // Move the map to the new location
         mapRef.current?.animateCamera({
           center: {
@@ -304,7 +304,12 @@ const MapScreen: React.FC<HomeScreenProps> = ({navigation}) => {
         onRequestClose={() => setIsSearchFilterVisible(false)}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.filterTitle}>Search</Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <Text style={styles.filterTitle}>Search</Text>
+              <TouchableOpacity onPress={() => setIsSearchFilterVisible(false)}>
+                <Icon name="cross" size={24} color="black" />
+              </TouchableOpacity>
+            </View>
             <TextInput
               style={styles.searchInput}
               placeholder="Search for a restaurant or deal"
@@ -322,7 +327,7 @@ const MapScreen: React.FC<HomeScreenProps> = ({navigation}) => {
             <FlatList
               data={searchResults}
               keyExtractor={item => item.place_id}
-              renderItem={({item}) => (
+              renderItem={({ item }) => (
                 <TouchableOpacity
                   style={{
                     paddingVertical: 12,
@@ -517,7 +522,7 @@ const styles = StyleSheet.create({
     color: '#28a745',
     fontWeight: 'bold',
   },
-  
+
 });
 
 export default MapScreen;
