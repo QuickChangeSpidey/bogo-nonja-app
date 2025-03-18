@@ -201,9 +201,6 @@ const MapScreen: React.FC<HomeScreenProps> = ({navigation}) => {
 
       if (response.data.status === 'OK') {
         const {lat, lng} = response.data.results[0].geometry.location;
-
-        console.log('Location Found:', lat, lng);
-
         // Move the map to the new location
         mapRef.current?.animateCamera({
           center: {

@@ -32,8 +32,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     dispatch(fetchDealsByCityAndCountry({ city: 'Vancouver', country: 'Canada' }));
   }, [dispatch]);
 
-  console.log('Deals:', deals);
-
   const formatDateTime = (dateString: string) => {
     if (!dateString) return "N/A"; // Handle missing dates
     const date = new Date(dateString);

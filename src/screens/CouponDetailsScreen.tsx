@@ -9,6 +9,12 @@ interface RouteParams {
   };
 }
 
+const formatDateTime = (dateTime: string | Date) => {
+  const date = new Date(dateTime);
+  return date.toLocaleString(); // Formats as "MM/DD/YYYY, HH:MM AM/PM"
+};
+
+
 const CouponDetailsScreen = ({ route }: { route: RouteParams }) => {
   const { coupon } = route.params;
   const [isFavorite, setIsFavorite] = useState(false);
@@ -19,20 +25,91 @@ const CouponDetailsScreen = ({ route }: { route: RouteParams }) => {
   };
 
   return (
-    <View style={styles.container}>
+<View style={styles.container}>
+      {/* Coupon Image */}
       <Image source={{ uri: coupon.image }} style={styles.couponImage} />
+
       <View style={styles.detailsContainer}>
+        {/* Header Section */}
         <View style={styles.header}>
           <Text style={styles.couponCode}>Code: {coupon.code}</Text>
           <TouchableOpacity onPress={toggleFavorite} style={styles.heartIconContainer}>
             <Icon name="heart" size={24} color={isFavorite ? '#ff0000' : '#ccc'} />
           </TouchableOpacity>
         </View>
-        <Text style={styles.details}>{coupon.discountPercentage}</Text>
+
+        {/* Location & Address */}
         <Text style={styles.details}>{coupon.locationName}</Text>
-        <Text style={styles.details}>{coupon.type}</Text>
-        <Text style={styles.date}>End Date: {coupon.expirationDate}</Text>
+        <Text style={styles.details}>{coupon.address}</Text>
+
+
+        {/* ✅ Coupon Type Specific Details */}
+        {coupon.type === 'BOGO' || coupon.type === 'Buy1Get1FreeItem' ? (
+          <>
+            <Text style={styles.details}>Buy: {coupon.purchasedItems.join(', ') || 'Any item'}</Text>
+            <Text style={styles.details}>Get: {coupon.freeItems.join(', ') || 'Any item'}</Text>
+          </>
+        ) : null}
+
+        {coupon.type === 'FreeItemWithPurchase' ? (
+          <>
+            <Text style={styles.details}>Buy: {coupon.purchasedItems.join(', ') || 'Any item'}</Text>
+            <Text style={styles.details}>Get: {coupon.freeItems.join(', ') || 'Any item'} Free</Text>
+            <Text style={styles.details}>On: ${coupon.min} spent</Text>
+          </>
+        ) : null}
+
+        {coupon.type === 'ComboDeal' ? (
+          <Text style={styles.details}>
+            Combo: {coupon.comboItems.join(', ') || 'Multiple items'} for ${coupon.comboPrice}
+          </Text>
+        ) : null}
+
+        {coupon.type === 'FamilyPack' ? (
+          <Text style={styles.details}>
+            Family Pack: {coupon.familyPackItems.join(', ') || 'Multiple items'} for ${coupon.familyPackPrice}
+          </Text>
+        ) : null}
+
+        {coupon.type === 'DiscountOnSpecificItems' ? (
+          <Text style={styles.details}>
+            {coupon.discountPercentage
+              ? `Save ${coupon.discountPercentage}%`
+              : `Save $${coupon.discountValue}`} on {coupon.purchasedItems.join(', ')}
+          </Text>
+        ) : null}
+
+        {coupon.type === 'SpendMoreSaveMore' ? (
+          <Text style={styles.details}>
+            {coupon.discountPercentage
+              ? `Save ${coupon.discountPercentage}% on $${coupon.min}+ spent`
+              : `Save $${coupon.discountValue}`} on {coupon.purchasedItems.join(', ')}
+          </Text>
+        ) : null}
+
+        {coupon.type === 'HappyHour' ? (
+          <Text style={styles.details}>
+            Happy Hour: {coupon.startHour} - {coupon.endHour} ({coupon.discountPercentage}% off)
+          </Text>
+        ) : null}
+
+        {coupon.type === 'StorewideFlatDiscount' ? (
+          <Text style={styles.details}>
+            Storewide Discount: Save {coupon.discountPercentage}%
+          </Text>
+        ) : null}
+
+        {coupon.type === 'LimitedTime' ? (
+          <Text style={styles.details}>
+            Limited Time Offer: {formatDateTime(coupon.startTime)} - {formatDateTime(coupon.endTime)}
+          </Text>
+        ) : null}
+
+        {/* Expiry Date & Quantity Left */}
+        <Text style={styles.date}>Expires: {new Date(coupon.expirationDate).toLocaleDateString()}</Text>
         <Text style={styles.numberLeft}>Coupons Left: {coupon.quantity}</Text>
+
+        {/* Redeem Button */}
         <TouchableOpacity style={styles.redeemButton}>
           <Text style={styles.redeemButtonText}>Redeem</Text>
         </TouchableOpacity>
