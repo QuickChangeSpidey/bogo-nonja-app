@@ -14,11 +14,9 @@ import {
   FlatList,
 } from 'react-native';
 import MapView, {Callout, Marker} from 'react-native-maps';
-import Slider from '@react-native-community/slider';
 import restaurantData from '../api/restaurants';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RootStackParamList} from '../../App';
-import dealTypes from '../api/deals';
 import Icon from 'react-native-vector-icons/Entypo';
 import axios from 'axios';
 import Geolocation from '@react-native-community/geolocation';
