@@ -100,7 +100,7 @@ const CouponDetailsScreen = ({ route }: { route: RouteParams }) => {
         <Text style={styles.numberLeft}>Coupons Left: {coupon.quantity}</Text>
 
         {/* Redeem Button */}
-        <TouchableOpacity style={styles.redeemButton}>
+        <TouchableOpacity style={styles.redeemButton} onPress={() => {}}>
           <Text style={styles.redeemButtonText}>Redeem</Text>
         </TouchableOpacity>
       </View>
