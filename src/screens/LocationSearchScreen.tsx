@@ -102,7 +102,6 @@ const LocationSearchScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     try {
       const url = `/locations/query/search/${encodeURIComponent(searchQuery)}`;
       const response = await apiClient.get<ApiResponse>(url);
-      console.log('Locations:', response.data.results);
       setLocations(response.data.results || []);
     } catch (err: any) {
       console.error('Error fetching locations:', err.response?.status, err.response?.data);

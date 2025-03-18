@@ -59,7 +59,6 @@ const CouponsList: React.FC<HomeScreenProps & { route: RouteParams }> = ({ route
 
     try {
       const response = await apiClient.get<Coupon[]>(`/coupons/${locationId}`);
-      console.log('Coupons:', response.data);
       setCoupons(response.data || []);
     } catch (err: any) {
       console.error('Error fetching coupons:', err.response?.status, err.response?.data);
@@ -117,7 +116,6 @@ const CouponsList: React.FC<HomeScreenProps & { route: RouteParams }> = ({ route
         data={coupons}
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
-          console.log(item),
           <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('CouponDetails2', { coupon: item })}>
             <Image source={{ uri: item.image || 'https://via.placeholder.com/100' }} style={styles.cardImage} />
             <View style={styles.cardContent}>
