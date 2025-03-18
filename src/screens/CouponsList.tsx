@@ -59,6 +59,7 @@ const CouponsList: React.FC<HomeScreenProps & { route: RouteParams }> = ({ route
 
     try {
       const response = await apiClient.get<Coupon[]>(`/coupons/${locationId}`);
+      console.log('Coupons:', response.data);
       setCoupons(response.data || []);
     } catch (err: any) {
       console.error('Error fetching coupons:', err.response?.status, err.response?.data);

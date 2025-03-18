@@ -1,6 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
+interface MenuItem {
+  _id: string;
+  name: string;
+}
+
 interface Coupon {
   _id: string;
   locationId: string;
@@ -9,18 +14,24 @@ interface Coupon {
   discountPercentage: number;
   discountValue: number;
   description?: string;
-  purchasedItemIds: string[];
-  freeItemIds: string[];
-  familyPackItems: string[];
+  purchasedItemIds: MenuItem[];
+  freeItemIds: MenuItem[];
+  familyPackItems: MenuItem[];
   familyPackPrice: number;
   minimumSpend: number;
   spendThresholds: any[];
-  comboItems: string[];
+  comboItems: MenuItem[];
   comboPrice: number;
   expirationDate: string;
   isActive: boolean;
   quantity: number;
+  startHour?: number;
+  endHour?: number;
+  startTime?: string;
+  endTime?: string;
+  maxUsage: number;
   maxUsagePerUser: number;
+  portionSize: number;
   image?: string;
 }
 
@@ -32,6 +43,10 @@ interface RouteParams {
 
 const formatDateTime = (dateTime: string) => {
   return new Date(dateTime).toLocaleString();
+};
+
+const getItemNames = (items: MenuItem[]) => {
+  return items.length > 0 ? items.map(item => item.name).join(', ') : 'Any item';
 };
 
 const CouponDetailsScreen2 = ({ route }: { route: RouteParams }) => {
@@ -49,17 +64,33 @@ const CouponDetailsScreen2 = ({ route }: { route: RouteParams }) => {
         {/* Coupon Details */}
         {coupon.type === 'BOGO' && (
           <>
-            <Text style={styles.details}>Buy: {coupon.purchasedItemIds.join(', ') || 'Any item'}</Text>
-            <Text style={styles.details}>Get: {coupon.freeItemIds.join(', ') || 'Any item'}</Text>
+            <Text style={styles.details}>Buy: {getItemNames(coupon.purchasedItemIds)}</Text>
+            <Text style={styles.details}>Get: {getItemNames(coupon.freeItemIds)}</Text>
+          </>
+        )}
+
+        {coupon.type === 'HappyHour' && (
+          <>
+            <Text style={styles.details}>Start: {coupon.startHour}</Text>
+            <Text style={styles.details}>End: {coupon.endHour}</Text>
+          </>
+        )}
+
+        {coupon.type === 'LimitedTime' && (
+          <>
+            <Text style={styles.details}>{coupon.description}</Text>
+            <Text style={styles.details}>Start Time: {formatDateTime(coupon.startTime||'')}</Text>
+            <Text style={styles.details}>End Time: {formatDateTime(coupon.endTime||'')}</Text>
+
           </>
         )}
 
         {coupon.type === 'ComboDeal' && (
-          <Text style={styles.details}>Combo: {coupon.comboItems.join(', ') || 'Multiple items'} for ${coupon.comboPrice}</Text>
+          <Text style={styles.details}>Combo: {getItemNames(coupon.comboItems)} for ${coupon.comboPrice}</Text>
         )}
 
         {coupon.type === 'FamilyPack' && (
-          <Text style={styles.details}>Family Pack: {coupon.familyPackItems.join(', ') || 'Multiple items'} for ${coupon.familyPackPrice}</Text>
+          <Text style={styles.details}>Family Pack: {getItemNames(coupon.familyPackItems)} for ${coupon.familyPackPrice} with portion size {coupon.portionSize}</Text>
         )}
 
         {coupon.discountPercentage > 0 && (
