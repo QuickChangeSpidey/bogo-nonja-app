@@ -86,7 +86,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             city = component.long_name;
           }
           if (component.types.includes('administrative_area_level_1')) {
-            province = component.long_name;
+            province = component.short_name;
           }
           if (component.types.includes('country')) {
             country = component.long_name;
