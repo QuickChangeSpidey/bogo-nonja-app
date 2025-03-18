@@ -45,7 +45,6 @@ export type RootStackParamList = {
   Main: undefined;
   Recovery: undefined;
   Activity: undefined;
-  Map: undefined;
   CouponsList: { item: { locationId: string; locationName: string } };
   CouponDetails: { coupon?: Deal } | undefined;
   CouponDetails2: { coupon?: Deal } | undefined;
@@ -148,15 +147,16 @@ const MainTabs = () => (
       }}
     />
     <Tab.Screen
-      name="Favorites"
-      component={FavoriteScreen}
-      options={{ headerShown: false }}
-    />
-    <Tab.Screen
       name="Map"
       component={MapScreen}
       options={{ headerShown: false }}
     />
+    <Tab.Screen
+      name="Favorites"
+      component={FavoriteScreen}
+      options={{ headerShown: false }}
+    />
+
   </Tab.Navigator>
 );
 
@@ -291,19 +291,6 @@ const App = () => {
                   headerTitleStyle: { color: '#28a745' },
                 })}
                 component={CouponDetailsScreen2}
-              />
-              <Stack.Screen
-                name="Map"
-                options={({ navigation }) => ({
-                  headerLeft: () => (
-                    <TouchableOpacity onPress={() => navigation.goBack()}>
-                      <Icon name="chevron-left" size={28} color="#28a745" />
-                    </TouchableOpacity>
-                  ),
-                  headerStyle: { backgroundColor: '#fff' },
-                  headerTitleStyle: { color: '#28a745' },
-                })}
-                component={MapScreen}
               />
               <Stack.Screen
                 name="Activity"

@@ -39,7 +39,6 @@ interface HomeScreenProps {
 
 const MapScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant>();
-  const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [isSearchFilterVisible, setIsSearchFilterVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState(''); // State for search input
   const [selectedDealType, setSelectedDealType] = useState<string | null>(null);
@@ -172,11 +171,6 @@ const MapScreen: React.FC<HomeScreenProps> = ({navigation}) => {
     }
   };
 
-  const applyFilter = () => {
-    // Placeholder: Filter logic can be added here
-    setIsFilterVisible(false);
-  };
-
   const mapRef = useRef<MapView>(null); // Create a map reference
 
   // Add your Google Maps API key here
@@ -267,93 +261,12 @@ const MapScreen: React.FC<HomeScreenProps> = ({navigation}) => {
         <Icon name="location" size={24} color="white" />
       </TouchableOpacity>
 
-      {/* Filter Button */}
-      <TouchableOpacity
-        style={styles.filterButton}
-        onPress={() => setIsFilterVisible(true)}>
-        <Icon name="funnel" size={24} color="white" />
-      </TouchableOpacity>
-
       {/* Search Button */}
       <TouchableOpacity
         style={styles.filterSearchButton}
         onPress={() => setIsSearchFilterVisible(true)}>
         <Icon name="magnifying-glass" size={24} color="white" />
       </TouchableOpacity>
-
-      {/* Filter Modal */}
-      <Modal
-        transparent={true}
-        animationType="slide"
-        visible={isFilterVisible}
-        onRequestClose={() => setIsFilterVisible(false)}>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.filterTitle}>Filter Options</Text>
-
-            {/* Deal Type Filter */}
-            <Text style={styles.filterLabel}>Deal Type</Text>
-            {dealTypes.map(deal => (
-              <TouchableOpacity
-                key={deal.id}
-                onPress={() => setSelectedDealType(deal.title)}>
-                <Text
-                  style={
-                    selectedDealType === deal.title
-                      ? styles.filterActive
-                      : styles.filterOption
-                  }>
-                  {deal.title}
-                </Text>
-              </TouchableOpacity>
-            ))}
-
-            {/* Distance Filter */}
-            <Text style={styles.filterLabel}>
-              Distance ({distanceRange} km)
-            </Text>
-            <Slider
-              style={styles.slider}
-              minimumValue={1}
-              maximumValue={50}
-              step={1}
-              value={distanceRange}
-              onValueChange={value => setDistanceRange(value)}
-              minimumTrackTintColor="#28a745"
-              maximumTrackTintColor="#ccc"
-              thumbTintColor="#28a745"
-            />
-
-            {/* Expiry Filter */}
-            <Text style={styles.filterLabel}>Expiry</Text>
-            <TouchableOpacity onPress={() => setSelectedExpiry('Soon')}>
-              <Text
-                style={
-                  selectedExpiry === 'Soon'
-                    ? styles.filterActive
-                    : styles.filterOption
-                }>
-                Expiring Soon
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setSelectedExpiry('Later')}>
-              <Text
-                style={
-                  selectedExpiry === 'Later'
-                    ? styles.filterActive
-                    : styles.filterOption
-                }>
-                Longer Validity
-              </Text>
-            </TouchableOpacity>
-
-            {/* Apply Filters Button */}
-            <TouchableOpacity style={styles.applyButton} onPress={applyFilter}>
-              <Text style={styles.applyButtonText}>Apply Filters</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
 
       {/* Custom Popup Modal */}
       <Modal
@@ -495,7 +408,7 @@ const styles = StyleSheet.create({
   },
   locationButton: {
     position: 'absolute',
-    bottom: 300,
+    bottom: 200,
     right: 20,
     backgroundColor: '#28a745',
     borderRadius: 50,
