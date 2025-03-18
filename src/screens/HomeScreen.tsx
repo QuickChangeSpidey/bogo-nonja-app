@@ -124,7 +124,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
                       {item.type === 'FamilyPack' ? (
                         <Text style={styles.couponCode}>
-                          Combo: {item.comboItems.join(', ') || 'Multiple items'} for ${item.comboPrice}
+                          Combo: {item.familyPackItems.join(', ') || 'Multiple items'} for ${item.familyPackPrice}
                         </Text>
                       ) : null}
 

@@ -19,6 +19,8 @@ export interface Deal {
   startHour: number;
   endHour: number;
   discountValue: number;
+  familyPackPrice: number;
+  familyPackItems: string[];
   expirationDate: string;
   min: number;
   purchasedItems: string[]; // List of item names that must be purchased
