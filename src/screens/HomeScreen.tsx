@@ -34,7 +34,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const GOOGLE_MAPS_API_KEY = 'AIzaSyBxeae0ftXUhPZ8bZWE1-xgaWEkJFKGjek';
   const [searchQuery, setSearchQuery] = useState(''); // State for search input
   const [searchResults, setSearchResults] = useState<any[]>([]); // For location suggestions
-
+  const [city, setCity] = useState<string>('Vancouver'); // For location suggestions
+  const [state, setState] = useState<string>('BC'); // For location suggestions
+  const [country, setCountry] = useState<string>('Canada'); // For location suggestions
   const fetchSearchSuggestions = async (query: string) => {
     if (!query) {
       setSearchResults([]);
@@ -73,14 +75,34 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           },
         },
       );
+
       if (response.data.status === 'OK') {
-        const { lat, lng } = response.data.result.geometry.location;
+        const addressComponents = response.data.result.address_components;
+        let city = '';
+        let province = '';
+        let country = '';
+        addressComponents.forEach((component: { types: string[]; long_name: string }) => {
+          if (component.types.includes('locality')) {
+            city = component.long_name;
+          }
+          if (component.types.includes('administrative_area_level_1')) {
+            province = component.long_name;
+          }
+          if (component.types.includes('country')) {
+            country = component.long_name;
+          }
+        });
+
+        setCity(city);
+        setState(province);
+        setCountry(country);
         setIsSearchFilterVisible(false);
       }
     } catch (error) {
       console.error('Error selecting suggestion:', error);
     }
   };
+
   const handleSearch = async () => {
     if (!searchQuery) {
       console.warn('Please enter a search query');
@@ -110,8 +132,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   };
 
   useEffect(() => {
-    dispatch(fetchDealsByCityAndCountry({ city: 'Vancouver', country: 'Canada' }));
-  }, [dispatch]);
+    dispatch(fetchDealsByCityAndCountry({ city: city, country: country }));
+  }, [dispatch, city, country, state]);
 
   const formatDateTime = (dateString: string) => {
     if (!dateString) return "N/A"; // Handle missing dates
@@ -129,8 +151,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const dealCategories = Object.keys(deals);
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', alignSelf: 'flex-end' }}>
-      { searchQuery == ''? <Icon name="location" size={28} color="#28a745" style={{ margin: 15 }} onPress={()=>setIsSearchFilterVisible(true)} /> : <Text style={{ margin: 15 }}>Vanc</Text> }
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', alignSelf: 'flex-end' }}>
+      <Text style={styles.countryStateText}>{city}, {state}, {country}</Text> 
+       <Icon name="location" size={28} color="#28a745" style={{ margin: 10 }} onPress={()=>setIsSearchFilterVisible(true)} />
       </View> 
       <ScrollView showsVerticalScrollIndicator={true}>
         {dealCategories.map((category) => {
@@ -403,8 +426,14 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   ribbonText: {
-    color: '#fff',
+    color: '#28a745',
     fontSize: 12,
+    fontWeight: 'bold',
+  },
+  countryStateText: {
+    color: '#28a745',
+    fontSize: 12,
+    margin: 10,
     fontWeight: 'bold',
   },
   modalContainer: {
