@@ -34,6 +34,19 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
   console.log('Deals:', deals);
 
+  const formatDateTime = (dateString: string) => {
+    if (!dateString) return "N/A"; // Handle missing dates
+    const date = new Date(dateString);
+    return date.toLocaleString("en-US", { 
+      day: "2-digit", 
+      month: "short", 
+      year: "numeric", 
+      hour: "2-digit", 
+      minute: "2-digit", 
+      hour12: false 
+    }).replace(",", ""); // Removes comma between date & time
+  };
+
   const dealCategories = Object.keys(deals);
   return (
     <SafeAreaView style={styles.container}>
@@ -105,7 +118,13 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
                       {item.type === 'ComboDeal' ? (
                         <Text style={styles.couponCode}>
-                          Combo: {item.comboItems.join(', ') || 'Multiple items'}
+                          Combo: {item.comboItems.join(', ') || 'Multiple items'} for ${item.comboPrice}
+                        </Text>
+                      ) : null}
+
+                      {item.type === 'FamilyPack' ? (
+                        <Text style={styles.couponCode}>
+                          Combo: {item.comboItems.join(', ') || 'Multiple items'} for ${item.comboPrice}
                         </Text>
                       ) : null}
 
@@ -118,14 +137,33 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                         </Text>
                       ) : null}
 
-                      {item.type === 'StorewideFlatDiscount' ||
-                        item.type === 'SpendMoreSaveMore' ? (
-                        <Text style={styles.ribbonText}>
+                      {item.type === 'SpendMoreSaveMore' ? (
+                        <Text style={styles.couponCode}>
                           {item.discountPercentage
-                            ? `Save ${item.discountPercentage}%`
-                            : `Save $${item.discountValue}`}
+                            ? `Save ${item.discountPercentage}% on $${item.min}+ spent`
+                            : `Save $${item.discountValue}`} on{' '}
+                          {item.purchasedItems.join(', ')}
                         </Text>
                       ) : null}
+
+                      {item.type === 'HappyHour' ? (
+                        <Text style={styles.cardSubtitle}>
+                          Happy Hour starts at {item.startHour} and ends at {item.endHour} for {item.discountPercentage}% off
+                        </Text>
+                      ) : null}
+
+                      {item.type === 'StorewideFlatDiscount' ? (
+                        <Text style={styles.couponCode}>
+                          Save ${item.discountPercentage}% Flat
+                        </Text>
+                      ) : null}
+
+                      {item.type === 'LimitedTime' ? (
+                        <Text style={styles.cardSubtitle}>
+                          Limited Time Deal starts at {formatDateTime(item.startTime)} and ends at {formatDateTime(item.endTime)}
+                        </Text>
+                      ) : null}
+
 
                       <Text style={styles.expiryDate}>
                         Expires: {new Date(item.expirationDate).toLocaleDateString()}

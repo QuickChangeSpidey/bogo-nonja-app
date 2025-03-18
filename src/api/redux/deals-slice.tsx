@@ -11,7 +11,13 @@ export interface Deal {
   type: string;
   quantity: number;
   code: string;
+  address: string;
+  comboPrice: number;
   discountPercentage: number;
+  startTime: string;
+  endTime: string;
+  startHour: number;
+  endHour: number;
   discountValue: number;
   expirationDate: string;
   min: number;
