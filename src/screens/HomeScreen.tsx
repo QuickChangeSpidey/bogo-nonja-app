@@ -11,6 +11,8 @@ import {
   SafeAreaView,
   Modal,
   TextInput,
+  Platform,
+  PermissionsAndroid,
 } from 'react-native';
 import { RootStackParamList } from '../../App';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -19,6 +21,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../api/redux/store';
 import { fetchDealsByCityAndCountry } from '../api/redux/deals-slice';
 import axios from 'axios';
+import Geolocation from '@react-native-community/geolocation';
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Main'>;
 
@@ -28,15 +31,100 @@ interface HomeScreenProps {
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
+  const [userLocation, setUserLocation] = useState({ latitude: 0, longitude: 0 });
+  const GOOGLE_MAPS_API_KEY = 'AIzaSyBxeae0ftXUhPZ8bZWE1-xgaWEkJFKGjek';
   const dispatch = useDispatch<AppDispatch>();
   const { deals, loading, error } = useSelector((state: RootState) => state.deals);
   const [isSearchFilterVisible, setIsSearchFilterVisible] = useState(false);
-  const GOOGLE_MAPS_API_KEY = 'AIzaSyBxeae0ftXUhPZ8bZWE1-xgaWEkJFKGjek';
   const [searchQuery, setSearchQuery] = useState(''); // State for search input
   const [searchResults, setSearchResults] = useState<any[]>([]); // For location suggestions
   const [city, setCity] = useState<string>(''); // For location suggestions
   const [state, setState] = useState<string>(''); // For location suggestions
   const [country, setCountry] = useState<string>(''); // For location suggestions
+
+  useEffect(() => {
+    requestLocationPermission();
+  }, []);
+
+  const requestLocationPermission = async () => {
+    try {
+      if (Platform.OS === 'android') {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: 'Location Permission',
+            message: 'We need access to your location to show nearby deals.',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          getCurrentLocation();
+        } else {
+          console.warn('Location permission denied');
+        }
+      } else {
+        getCurrentLocation();
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+
+  const getCurrentLocation = () => {
+    Geolocation.getCurrentPosition(
+      position => {
+        const { latitude, longitude } = position.coords;
+        setUserLocation({ latitude, longitude });
+        fetchLocationDetails(latitude, longitude);
+      },
+      error => {
+        console.warn('Error getting location:', error);
+      },
+      {
+        enableHighAccuracy: true, // Try GPS first
+        timeout: 30000, // Increase timeout to 30 seconds
+        maximumAge: 10000, // Allow cached location for 10 seconds
+        distanceFilter: 0, // Trigger on every location change
+      },
+    );
+  };
+
+  const fetchLocationDetails = async (latitude: number, longitude:number)   => {
+    try {
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_MAPS_API_KEY}`
+      );
+      const data = await response.json();
+      if (data.status === 'OK') {
+        // Process the address components to extract city, state, and country
+        const addressComponents = data.results[0].address_components;
+        const cityObj = addressComponents.find(component =>
+          component.types.includes('locality')
+        );
+        const stateObj = addressComponents.find(component =>
+          component.types.includes('administrative_area_level_1')
+        );
+        const countryObj = addressComponents.find(component =>
+          component.types.includes('country')
+        );
+
+        const city = cityObj ? cityObj.long_name : null;
+        const state = stateObj ? stateObj.long_name : null;
+        const country = countryObj ? countryObj.long_name : null;
+        setCity(city);
+        setState(state);  
+        setCountry(country);
+      } else {
+        console.warn('Geocoding API error:', data.status);
+      }
+    } catch (error) {
+      console.error('Error fetching location details:', error);
+      return null;
+    }
+  };
+
   const fetchSearchSuggestions = async (query: string) => {
     if (!query) {
       setSearchResults([]);
@@ -154,13 +242,12 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', alignSelf: 'flex-end' }}>
-      <Text style={styles.countryStateText}>{city}, {state}, {country}</Text> 
-       <Icon name="location" size={28} color="#28a745" style={{ margin: 10 }} onPress={()=>setIsSearchFilterVisible(true)} />
-      </View> 
+        <Text style={styles.countryStateText}>{city}, {state}, {country}</Text>
+        <Icon name="location" size={28} color="#28a745" style={{ margin: 10 }} onPress={() => setIsSearchFilterVisible(true)} />
+      </View>
       <ScrollView showsVerticalScrollIndicator={true}>
         {dealCategories.map((category) => {
           const categoryDeals = deals[category];
-          if (categoryDeals.length === 0) return null;
           return (
             <View key={category} style={styles.dealSection}>
               <View style={styles.sectionHeader}>
@@ -278,7 +365,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                     </View>
                   </TouchableOpacity>
                 )}
-              />: null}
+              /> : null}
             </View>
           );
         })}
@@ -349,6 +436,18 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           </View>
         </Modal>
       </ScrollView>
+      {dealCategories.length === 0 && (
+        <View style={styles.noDataContainer}>
+          <Icon
+            name="location"
+            size={28}
+            color="#28a745"
+            style={{ margin: 10 }}
+            onPress={() => setIsSearchFilterVisible(true)}
+          />
+          <Text style={styles.footerText}>Choose your location</Text>
+        </View>
+      )}
     </SafeAreaView>
   );
 
@@ -465,6 +564,17 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
+  },
+  noDataContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  footerText: {
+    fontSize: 16,
+    color: '#333',
+    marginTop: 10,
   },
   filterLabel: {
     fontSize: 16,
