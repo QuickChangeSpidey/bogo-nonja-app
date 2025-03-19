@@ -37,7 +37,7 @@ interface HomeScreenProps {
 
 const MapScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant>();
-  const [locations, setLocations] = useState<any>();
+  const [locations, setLocations] = useState<any[]>();
   const [isSearchFilterVisible, setIsSearchFilterVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState(''); // State for search input
   const [isPopupVisible, setIsPopupVisible] = useState(false);
@@ -178,6 +178,7 @@ const MapScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           center: { latitude: lat, longitude: lng },
           zoom: 15,
         });
+        getRestaurantData(lat, lng);
         setIsSearchFilterVisible(false);
       }
     } catch (error) {
@@ -239,7 +240,7 @@ const MapScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           latitudeDelta: 0.05,
           longitudeDelta: 0.05,
         }}>
-        {locations.map((location:any) => {
+        {locations?.map((location:any) => {
           // Suppose location.geolocation.coordinates = [lng, lat]
           const [lng, lat] = location.geolocation.coordinates;
           return (
@@ -251,10 +252,10 @@ const MapScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                 setSelectedRestaurant({
                   // convert location object to the shape you need, if required
                   id: 1, // or location.locationId
-                  name: location.name,
-                  latitude: lat,
-                  longitude: lng,
-                  coupons: location.coupons.map(c => c.code), // or whatever your existing Restaurant interface requires
+                    name: location.name,
+                    latitude: lat,
+                    longitude: lng,
+                    coupons: location.coupons.map((c: { code: string }) => c.code), // or whatever your existing Restaurant interface requires
                 });
                 if (Platform.OS === 'android') {
                   handleMarkerPress({
@@ -262,7 +263,7 @@ const MapScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                     name: location.name,
                     latitude: lat,
                     longitude: lng,
-                    coupons: location.coupons.map(c => c.code),
+                    coupons: location.coupons.map((c: { code: string }) => c.code),
                   });
                 }
               }}
@@ -298,39 +299,6 @@ const MapScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         onPress={() => setIsSearchFilterVisible(true)}>
         <Icon name="magnifying-glass" size={24} color="white" />
       </TouchableOpacity>
-
-      {/* Custom Popup Modal */}
-      <Modal
-        transparent={true}
-        animationType="fade"
-        visible={isPopupVisible}
-        onRequestClose={closePopup}>
-        <View style={styles.popupOverlay}>
-          <View style={styles.popupContainer}>
-            {popupRestaurant && (
-              <>
-                <Text style={styles.popupTitle}>{popupRestaurant.name}</Text>
-                <Text style={styles.popupText}>
-                  Coupons Available: {popupRestaurant.coupons.length}
-                </Text>
-                <TouchableOpacity
-                  style={styles.popupButton}
-                  onPress={() => {
-                    navigation.navigate('CouponDetails');
-                    closePopup();
-                  }}>
-                  <Text style={styles.popupButtonText}>Show Coupons</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.popupCloseButton}
-                  onPress={closePopup}>
-                  <Text style={styles.popupCloseButtonText}>Close</Text>
-                </TouchableOpacity>
-              </>
-            )}
-          </View>
-        </View>
-      </Modal>
 
       {/* Search Modal */}
       <Modal
