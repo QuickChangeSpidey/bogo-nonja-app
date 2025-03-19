@@ -14,7 +14,6 @@ import {
   FlatList,
 } from 'react-native';
 import MapView, { Callout, Marker } from 'react-native-maps';
-import restaurantData from '../api/restaurants';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../App';
 import Icon from 'react-native-vector-icons/Entypo';
@@ -58,12 +57,6 @@ const MapScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const handleMarkerPress = (restaurant: Restaurant) => {
     setPopupRestaurant(restaurant);
     setIsPopupVisible(true);
-  };
-
-  // Close Popup
-  const closePopup = () => {
-    setIsPopupVisible(false);
-    setPopupRestaurant(null);
   };
 
   const fetchSearchSuggestions = async (query: string) => {
@@ -132,7 +125,11 @@ const MapScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       setLocations(response.data);
       // Do something with response.data (e.g., set state)
     } catch (error) {
-      console.log('Error fetching restaurants:', error.message);
+      if (error instanceof Error) {
+        console.log('Error fetching restaurants:', error.message);
+      } else {
+        console.log('Error fetching restaurants:', error);
+      }
     }
   };
 
@@ -145,7 +142,7 @@ const MapScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         if (mapRef.current) {
           mapRef.current.animateCamera({
             center: { latitude, longitude },
-            zoom: 15,
+            zoom: 10,
           });
         }
       },
@@ -241,7 +238,7 @@ const MapScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           longitudeDelta: 0.05,
         }}>
         {locations?.map((location:any) => {
-          // Suppose location.geolocation.coordinates = [lng, lat]
+          console.log(location);
           const [lng, lat] = location.geolocation.coordinates;
           return (
             <Marker
