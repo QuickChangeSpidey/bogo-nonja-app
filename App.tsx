@@ -104,12 +104,12 @@ const MainTabs = () => (
     screenOptions={({ route }) => ({
       tabBarIcon: ({ color, size }) => {
         const icons: Record<string, string> = {
-          Home: 'home',
+          Home: 'Deals',
           Search: 'magnifying-glass',
           Activity: 'cycle',
           Deals: 'price-tag',
-          Favorites: 'heart',
-          Map: 'globe',
+          Food: 'bowl',
+          Nearby: 'globe',
         };
         return (
           <Icon
@@ -125,13 +125,13 @@ const MainTabs = () => (
       headerLeft: () => null, // Prevents any left header button across all tabs
     })}>
     <Tab.Screen
-      name="Home"
+      name="Deals"
       component={HomeScreen}
       options={{ headerShown: false }}
     />
     <Tab.Screen
-      name="Search"
-      component={LocationSearchScreen}
+      name="Food"
+      component={FavoriteScreen}
       options={{ headerShown: false }}
     />
     <Tab.Screen
@@ -147,13 +147,13 @@ const MainTabs = () => (
       }}
     />
     <Tab.Screen
-      name="Map"
+      name="Nearby"
       component={MapScreen}
       options={{ headerShown: false }}
     />
     <Tab.Screen
-      name="Favorites"
-      component={FavoriteScreen}
+      name="Search"
+      component={LocationSearchScreen}
       options={{ headerShown: false }}
     />
 

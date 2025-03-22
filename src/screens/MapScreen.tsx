@@ -238,7 +238,7 @@ const MapScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           latitudeDelta: 0.05,
           longitudeDelta: 0.05,
         }}>
-        {locations?.map((location:any) => {
+        {locations?.map((location: any) => {
           console.log(location);
           const [lng, lat] = location.geolocation.coordinates;
           return (
@@ -250,10 +250,10 @@ const MapScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                 setSelectedRestaurant({
                   // convert location object to the shape you need, if required
                   id: 1, // or location.locationId
-                    name: location.name,
-                    latitude: lat,
-                    longitude: lng,
-                    coupons: location.coupons.map((c: { code: string }) => c.code), // or whatever your existing Restaurant interface requires
+                  name: location.name,
+                  latitude: lat,
+                  longitude: lng,
+                  coupons: location.coupons.map((c: { code: string }) => c.code), // or whatever your existing Restaurant interface requires
                 });
                 if (Platform.OS === 'android') {
                   handleMarkerPress({
