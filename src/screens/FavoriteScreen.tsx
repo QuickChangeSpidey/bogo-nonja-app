@@ -18,7 +18,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../App';
 
 type Restaurant = {
-  id: string;
+  _id: string;
   name: string;
   address: string;
   logo: string;
@@ -97,57 +97,75 @@ const RestaurantListByGenre:React.FC<HomeScreenProps> = ({navigation}) => {
       const response = await axios.get(
         `http://10.0.2.2:5000/api/restaurant-locations/query?lat=${latitude}&long=${longitude}`
       );
+      console.log(response.data);
       setData(response.data || { restaurants: {} });
     } catch (error) {
       console.error('Error fetching restaurant data:', error);
       setData({ restaurants: {} });
     }
   };
-  if (!data || !data.restaurants || Object.keys(data.restaurants).length === 0) {
-    return (
-      <SafeAreaView style={styles.loadingContainer}>
-        <Text>No restaurants available</Text>
-      </SafeAreaView>
-    );
-  }
-
-  const genres = Object.keys(data.restaurants);
-
+  
+  
+  if (!data || Object.keys(data).length === 0) {
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {genres.map((genre) => {
-          const genreData = data.restaurants[genre];
-          if (!genreData || !genreData.restaurants || genreData.restaurants.length === 0) {
-            return null;
-          }
-          return (
-            <View key={genre} style={styles.genreSection}>
-              <View style={styles.sectionHeader}>
-                <Text style={styles.sectionTitle}>{genre}</Text>
-                <Icon name="chevron-right" size={24} color="#28a745" />
-              </View>
-              <FlatList
-                data={genreData.restaurants}
-                keyExtractor={(item) => item.id}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                renderItem={({ item }) => (
-                  <TouchableOpacity style={styles.card} onPress={() => {navigation.navigate('CouponsList', {item:{locationId:item.id, locationName:item.name}})}}>
-                    <Image source={{ uri: item.logo }} style={styles.cardImage} />
-                    <View style={styles.cardContent}>
-                      <Text style={styles.cardTitle}>{item.name}</Text>
-                      <Text style={styles.cardSubtitle}>{item.address}</Text>
-                    </View>
-                  </TouchableOpacity>
-                )}
-              />
-            </View>
-          );
-        })}
-      </ScrollView>
+    <SafeAreaView style={styles.loadingContainer}>
+      <Text>No restaurants available</Text>
     </SafeAreaView>
   );
+}
+
+const genres = Object.keys(data);
+
+return (
+  <SafeAreaView style={styles.container}>
+    <ScrollView showsVerticalScrollIndicator={false}>
+      {genres.map((genre) => {
+        const restaurants: Restaurant[] = data[genre];
+        if (!restaurants || restaurants.length === 0) {
+          return null;
+        }
+
+        return (
+          <View key={genre} style={styles.genreSection}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>{genre}</Text>
+              <Icon name="chevron-right" size={24} color="#28a745" />
+            </View>
+
+            <FlatList
+              data={restaurants}
+              keyExtractor={(item) => item._id}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.card}
+                  onPress={() =>
+                    navigation.navigate('CouponsList', {
+                      item: {
+                        locationId: item._id,
+                        locationName: item.name,
+                      },
+                    })
+                  }
+                >
+                  <Image source={{ uri: item.logo }} style={styles.cardImage} />
+                  <View style={styles.cardContent}>
+                    <Text style={styles.cardTitle}>{item.name}</Text>
+                    <Text style={styles.cardSubtitle}>{item.address}</Text>
+                    <Text style={styles.cardCoupon}>
+                      {item.couponCount} Coupons Available </Text>
+                  </View>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        );
+      })}
+    </ScrollView>
+  </SafeAreaView>
+);
+
 };
 
 const styles = StyleSheet.create({
@@ -185,6 +203,7 @@ const styles = StyleSheet.create({
   cardContent: { padding: 10, backgroundColor: '#fff' },
   cardTitle: { fontSize: 16, fontWeight: 'bold' },
   cardSubtitle: { fontSize: 12, color: '#555', marginTop: 5 },
+  cardCoupon: { fontSize: 12, color: 'green', marginTop: 5 },
 });
 
 export default RestaurantListByGenre;
