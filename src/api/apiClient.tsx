@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { Platform } from 'react-native';
 
 // Define API base URL
 export const API_BASE_URL = 'http://api.bogoninja.com/api/';
