@@ -12,6 +12,9 @@ import {
   Platform,
   PermissionsAndroid,
   FlatList,
+  Image,
+  Button,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import MapView, { Callout, Marker } from 'react-native-maps';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -19,14 +22,14 @@ import { RootStackParamList } from '../../App';
 import Icon from 'react-native-vector-icons/Entypo';
 import axios from 'axios';
 import Geolocation from '@react-native-community/geolocation';
-import { API_BASE_URL } from '../api/apiClient';
 
 export interface Restaurant {
   id: number;
   name: string;
   latitude: number;
   longitude: number;
-  coupons: string[];
+  couponCount: number;
+  logo?: string;
 }
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Main'>;
@@ -37,9 +40,9 @@ interface HomeScreenProps {
 
 const MapScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant>();
-  const [locations, setLocations] = useState<any[]>();
+  const [locations, setLocations] = useState<any[]>([]);
   const [isSearchFilterVisible, setIsSearchFilterVisible] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(''); // State for search input
+  const [searchQuery, setSearchQuery] = useState('');
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [popupRestaurant, setPopupRestaurant] = useState<Restaurant | null>(
     null,
@@ -48,7 +51,7 @@ const MapScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     latitude: number;
     longitude: number;
   } | null>(null);
-  const [searchResults, setSearchResults] = useState<any[]>([]); // For location suggestions
+  const [searchResults, setSearchResults] = useState<any[]>([]);
 
   useEffect(() => {
     requestLocationPermission();
@@ -116,14 +119,13 @@ const MapScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const getRestaurantData = async (latitude: number, longitude: number) => {
     try {
       // Use your custom client:
-      const response = await axios.get(`${API_BASE_URL}/find/nearby`, {
+      const response = await axios.get(`http://10.0.2.2:5000/api/map-locations/query`, {
         params: {
           lat: latitude,
-          lng: longitude,
+          long: longitude,
         },
       });
-
-      setLocations(response.data);
+      setLocations(response.data.locations);
       // Do something with response.data (e.g., set state)
     } catch (error) {
       if (error instanceof Error) {
@@ -239,29 +241,28 @@ const MapScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           longitudeDelta: 0.05,
         }}>
         {locations?.map((location: any) => {
-          console.log(location);
-          const [lng, lat] = location.geolocation.coordinates;
+          const [lng, lat] = location.coordinates;
           return (
             <Marker
-              key={location.locationId}
+              key={location.id}
               coordinate={{ latitude: lat, longitude: lng }}
               title={location.name}
               onPress={() => {
                 setSelectedRestaurant({
-                  // convert location object to the shape you need, if required
-                  id: 1, // or location.locationId
+                  id: location.id,
                   name: location.name,
                   latitude: lat,
                   longitude: lng,
-                  coupons: location.coupons.map((c: { code: string }) => c.code), // or whatever your existing Restaurant interface requires
+                  couponCount: location.couponCount,
                 });
                 if (Platform.OS === 'android') {
                   handleMarkerPress({
-                    id: 1,
+                    id: location.id,
                     name: location.name,
                     latitude: lat,
                     longitude: lng,
-                    coupons: location.coupons.map((c: { code: string }) => c.code),
+                    couponCount: location.couponCount,
+                    logo: location.logo,
                   });
                 }
               }}
@@ -304,7 +305,7 @@ const MapScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         animationType="slide"
         visible={isSearchFilterVisible}
         onRequestClose={() => setIsSearchFilterVisible(false)}>
-        <View style={styles.modalContainer}>
+        <View style={styles.modalSearchContainer}>
           <View style={styles.modalContent}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <Text style={styles.filterTitle}>Search</Text>
@@ -365,6 +366,37 @@ const MapScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           </View>
         </View>
       </Modal>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isPopupVisible}
+        onRequestClose={() => setIsPopupVisible(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setIsPopupVisible(false)}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              {popupRestaurant && (
+                <>
+                  <Image source={{ uri: popupRestaurant.logo }} style={styles.restaurantImage} />
+                  <Text style={styles.restaurantName}>{popupRestaurant.name}</Text>
+                  <TouchableOpacity style={styles.couponText}>
+                    <Text>
+                      {popupRestaurant.couponCount} Coupons Available
+                      {popupRestaurant.couponCount > 0}
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.closeButton}
+                    onPress={() => navigation.navigate('CouponsList', { item: { locationId: popupRestaurant.id.toString(), locationName: popupRestaurant.name } })}>
+                    {popupRestaurant.couponCount > 0 && <Text style={styles.closeButtonText}>Show</Text>}
+                  </TouchableOpacity>
+                </>
+              )}
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </View>
   );
 };
@@ -373,9 +405,73 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalSearchContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+  },
+  restaurantImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 10,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  couponItem: {
+    fontSize: 16,
+    marginVertical: 5,
+  },
+  noCouponsText: {
+    fontSize: 16,
+    fontStyle: 'italic',
+    color: 'gray',
+  },
+  couponText: {
+    fontSize: 16,
+    color: 'green',
+    marginBottom: 15,
+    alignItems: 'center',
+  },
+  closeButton: {
+    backgroundColor: '#28a745',
+    padding: 10,
+    borderRadius: 5,
+    width: '100%',
+    alignItems: 'center',
+  },
+  closeButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
   map: {
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
+  },
+  icon: {
+    marginLeft: 5,
+    color: '#28a745',
   },
   searchInput: {
     borderWidth: 1,
@@ -435,12 +531,6 @@ const styles = StyleSheet.create({
     padding: 15,
     elevation: 5,
   },
-  modalContainer: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   modalContent: {
     width: '80%',
     backgroundColor: 'white',
@@ -460,6 +550,11 @@ const styles = StyleSheet.create({
   filterOption: {
     fontSize: 14,
     paddingVertical: 5,
+  },
+  restaurantName: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 5,
   },
   filterActive: {
     fontSize: 14,
