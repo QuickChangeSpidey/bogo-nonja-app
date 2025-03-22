@@ -118,7 +118,7 @@ const MapScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const getRestaurantData = async (latitude: number, longitude: number) => {
     try {
       // Use your custom client:
-      const response = await axios.get(`http://10.0.2.2:5000/api/map-locations/query`, {
+      const response = await axios.get(`http://api.bogoninja.com/api/map-locations/query`, {
         params: {
           lat: latitude,
           long: longitude,

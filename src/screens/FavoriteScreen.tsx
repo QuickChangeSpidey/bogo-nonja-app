@@ -95,7 +95,7 @@ const RestaurantListByGenre:React.FC<HomeScreenProps> = ({navigation}) => {
   const fetchRestaurantData = async (latitude: number, longitude: number) => {
     try {
       const response = await axios.get(
-        `http://10.0.2.2:5000/api/restaurant-locations/query?lat=${latitude}&long=${longitude}`
+        `http://api.bogoninja.com/api/restaurant-locations/query?lat=${latitude}&long=${longitude}`
       );
       console.log(response.data);
       setData(response.data || { restaurants: {} });
