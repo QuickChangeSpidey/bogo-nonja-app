@@ -1,186 +1,184 @@
-import React, {useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   FlatList,
+  ScrollView,
   Image,
   TouchableOpacity,
-  TextInput,
-  Platform,
+  SafeAreaView,
+  PermissionsAndroid,
+  Platform
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
+import Geolocation from '@react-native-community/geolocation';
+import axios from 'axios';
 
-// Sample data for restaurants
-import fastFood from '../data/fastFood.json';
-import chinese from '../data/chinese.json';
-import indian from '../data/indian.json';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {RootStackParamList} from '../../App';
+type Restaurant = {
+  id: string;
+  name: string;
+  address: string;
+  logo: string;
+  couponCount: number;
+};
 
-type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Main'>;
+type GenreData = {
+  restaurants: Restaurant[];
+};
 
-interface HomeScreenProps {
-  navigation: HomeScreenNavigationProp;
-}
+type Data = {
+  restaurants: Record<string, GenreData>;
+};
 
-const allRestaurants = [...fastFood, ...chinese, ...indian]; // Combine all restaurants
+const GenreWiseRestaurants = () => {
+  const [data, setData] = useState<Data>({ restaurants: {} });
+  const [userLocation, setUserLocation] = useState({ latitude: 0, longitude: 0 });
 
-// Filter only favorited restaurants
-const favorites = allRestaurants.filter(restaurant => restaurant.isFavorite);
+  useEffect(() => {
+    requestLocationPermission();
+  }, []);
 
-const FavoritesScreen: React.FC<HomeScreenProps> = ({navigation}) => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filteredFavorites, setFilteredFavorites] = useState(favorites);
-
-  // Handle search functionality
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    if (query.trim() === '') {
-      setFilteredFavorites(favorites); // Reset to all favorites if query is empty
-    } else {
-      const lowercasedQuery = query.toLowerCase();
-      const filtered = favorites.filter(
-        restaurant =>
-          restaurant.name.toLowerCase().includes(lowercasedQuery) ||
-          (restaurant.name &&
-            restaurant.name.toLowerCase().includes(lowercasedQuery)),
-      );
-      setFilteredFavorites(filtered);
+  const requestLocationPermission = async () => {
+    try {
+      if (Platform.OS === 'android') {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: 'Location Permission',
+            message: 'We need access to your location to show nearby restaurants.',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          getCurrentLocation();
+        } else {
+          console.warn('Location permission denied');
+        }
+      } else {
+        getCurrentLocation();
+      }
+    } catch (err) {
+      console.warn(err);
     }
   };
 
-  return (
-    <View style={styles.container}>
-      {/* Search Bar */}
-      <View style={styles.searchBar}>
-        <TouchableOpacity>
-          <Icon
-            name="magnifying-glass"
-            size={24}
-            color="#666"
-            style={styles.searchIcon}
-          />
-        </TouchableOpacity>
-        <TextInput
-          style={styles.input}
-          placeholder="Search by name"
-          placeholderTextColor="#aaa"
-          value={searchQuery}
-          onChangeText={handleSearch}
-        />
-      </View>
+  const getCurrentLocation = () => {
+    Geolocation.getCurrentPosition(
+      position => {
+        const { latitude, longitude } = position.coords;
+        setUserLocation({ latitude, longitude });
+        fetchRestaurantData(latitude, longitude);
+      },
+      error => {
+        console.warn('Error getting location:', error);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 30000,
+        maximumAge: 10000,
+        distanceFilter: 0,
+      },
+    );
+  };
 
-      {/* Display filtered favorites */}
-      <FlatList
-        data={filteredFavorites}
-        keyExtractor={item => item.id + item.name}
-        renderItem={({item}) => (
-          <TouchableOpacity
-            style={styles.card}
-            onPress={() => navigation.navigate('CouponDetails')}>
-            <Image source={{uri: item.image}} style={styles.cardImage} />
-            <View style={styles.cardContent}>
-              <Text style={styles.cardTitle}>{item.name}</Text>
-              <Text style={styles.cardSubtitle}>{item.hours}</Text>
-              {item.coupons > 0 && (
-                <Text style={styles.couponText}>
-                  {item.coupons} Coupons Available
-                </Text>
-              )}
+  const fetchRestaurantData = async (latitude: number, longitude: number) => {
+    try {
+      const response = await axios.get(
+        `http://10.0.2.2:5000/api/restaurant-locations/query?lat=${latitude}&long=${longitude}`
+      );
+      console.log('response', response.data);
+      setData(response.data || { restaurants: {} });
+    } catch (error) {
+      console.error('Error fetching restaurant data:', error);
+      setData({ restaurants: {} });
+    }
+  };
+  if (!data || !data.restaurants || Object.keys(data.restaurants).length === 0) {
+    return (
+      <SafeAreaView style={styles.loadingContainer}>
+        <Text>No restaurants available</Text>
+      </SafeAreaView>
+    );
+  }
+
+  const genres = Object.keys(data.restaurants);
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {genres.map((genre) => {
+          const genreData = data.restaurants[genre];
+          if (!genreData || !genreData.restaurants || genreData.restaurants.length === 0) {
+            return null;
+          }
+          return (
+            <View key={genre} style={styles.genreSection}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>{genre}</Text>
+                <Icon name="chevron-right" size={24} color="#28a745" />
+              </View>
+              <FlatList
+                data={genreData.restaurants}
+                keyExtractor={(item) => item.id}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                renderItem={({ item }) => (
+                  <TouchableOpacity style={styles.card}>
+                    <Image source={{ uri: item.logo }} style={styles.cardImage} />
+                    <View style={styles.cardContent}>
+                      <Text style={styles.cardTitle}>{item.name}</Text>
+                      <Text style={styles.cardSubtitle}>{item.address}</Text>
+                    </View>
+                  </TouchableOpacity>
+                )}
+              />
             </View>
-            <TouchableOpacity style={styles.favoriteIcon}>
-              <Icon name="heart" size={20} color="#28a745" />
-            </TouchableOpacity>
-          </TouchableOpacity>
-        )}
-        ListEmptyComponent={
-          <Text style={styles.emptyText}>No restaurants found.</Text>
-        }
-      />
-    </View>
+          );
+        })}
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  searchBar: {
+  container: { flex: 0.9, backgroundColor: '#fff', padding: 20 },
+  loadingContainer: { flex: 0.9, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' },
+  sectionHeader: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#28a745',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: Platform.OS === 'ios' ? 10 : 0,
-    marginBottom: 20,
-    backgroundColor: '#fff',
-    height: 50,
+    marginHorizontal: 15,
+    marginTop: 20,
   },
-  searchIcon: {
-    marginRight: 10,
-  },
-  input: {
-    flex: 1,
-    fontSize: 18,
-    color: '#333',
-  },
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    padding: 10,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
+  sectionTitle: { fontSize: 20, fontWeight: 'bold', textTransform: 'capitalize' },
+  genreSection: { marginVertical: 15 },
   card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f9f9f9',
-    padding: 10,
-    marginBottom: 10,
+    width: 200,
+    marginRight: 15,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    overflow: 'hidden',
     shadowColor: '#000',
-    elevation: 2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 4,
+    borderWidth: 0.5,
+    borderColor: '#28a745',
   },
   cardImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 10,
+    width: '100%',
+    height: 100,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
   },
-  cardContent: {
-    flex: 1,
-    padding: 10,
-  },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  cardSubtitle: {
-    fontSize: 14,
-    color: '#555',
-  },
-  couponText: {
-    fontSize: 14,
-    color: '#28a745',
-    fontWeight: 'bold',
-    marginTop: 5,
-  },
-  emptyText: {
-    fontSize: 16,
-    textAlign: 'center',
-    marginTop: 20,
-    color: '#777',
-  },
-  favoriteIcon: {
-    padding: 10,
-  },
-  noFavoritesText: {
-    fontSize: 16,
-    textAlign: 'center',
-    marginTop: 20,
-    color: '#777',
-  },
+  cardContent: { padding: 10, backgroundColor: '#fff' },
+  cardTitle: { fontSize: 16, fontWeight: 'bold' },
+  cardSubtitle: { fontSize: 12, color: '#555', marginTop: 5 },
 });
 
-export default FavoritesScreen;
+export default GenreWiseRestaurants;
+

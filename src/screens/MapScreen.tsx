@@ -13,7 +13,6 @@ import {
   PermissionsAndroid,
   FlatList,
   Image,
-  Button,
   TouchableWithoutFeedback,
 } from 'react-native';
 import MapView, { Callout, Marker } from 'react-native-maps';
