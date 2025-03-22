@@ -385,11 +385,11 @@ const MapScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                       {popupRestaurant.couponCount > 0}
                     </Text>
                   </TouchableOpacity>
-                  <TouchableOpacity
+                  {popupRestaurant.couponCount>0 && <TouchableOpacity
                     style={styles.closeButton}
                     onPress={() => navigation.navigate('CouponsList', { item: { locationId: popupRestaurant.id.toString(), locationName: popupRestaurant.name } })}>
                     {popupRestaurant.couponCount > 0 && <Text style={styles.closeButtonText}>Show</Text>}
-                  </TouchableOpacity>
+                  </TouchableOpacity>}
                 </>
               )}
             </View>
