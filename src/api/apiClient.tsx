@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { Platform } from 'react-native';
 
 // Define API base URL
-const API_BASE_URL = 'http://localhost:5000/api/';
+const API_BASE_URL = Platform.OS == "android" ? 'http://10.0.2.2:5000/api/':'http://localhost:5000/api/';
 
 // Create an Axios instance
 const apiClient = axios.create({
