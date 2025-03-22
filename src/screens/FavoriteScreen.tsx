@@ -14,6 +14,8 @@ import {
 import Icon from 'react-native-vector-icons/Entypo';
 import Geolocation from '@react-native-community/geolocation';
 import axios from 'axios';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../../App';
 
 type Restaurant = {
   id: string;
@@ -31,7 +33,13 @@ type Data = {
   restaurants: Record<string, GenreData>;
 };
 
-const GenreWiseRestaurants = () => {
+type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Main'>;
+
+interface HomeScreenProps {
+  navigation: HomeScreenNavigationProp;
+}
+
+const RestaurantListByGenre:React.FC<HomeScreenProps> = ({navigation}) => {
   const [data, setData] = useState<Data>({ restaurants: {} });
   const [userLocation, setUserLocation] = useState({ latitude: 0, longitude: 0 });
 
@@ -89,7 +97,6 @@ const GenreWiseRestaurants = () => {
       const response = await axios.get(
         `http://10.0.2.2:5000/api/restaurant-locations/query?lat=${latitude}&long=${longitude}`
       );
-      console.log('response', response.data);
       setData(response.data || { restaurants: {} });
     } catch (error) {
       console.error('Error fetching restaurant data:', error);
@@ -126,7 +133,7 @@ const GenreWiseRestaurants = () => {
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 renderItem={({ item }) => (
-                  <TouchableOpacity style={styles.card}>
+                  <TouchableOpacity style={styles.card} onPress={() => {navigation.navigate('CouponsList', {item:{locationId:item.id, locationName:item.name}})}}>
                     <Image source={{ uri: item.logo }} style={styles.cardImage} />
                     <View style={styles.cardContent}>
                       <Text style={styles.cardTitle}>{item.name}</Text>
@@ -144,7 +151,7 @@ const GenreWiseRestaurants = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', padding: 20 },
+  container: { flex: 0.9, backgroundColor: '#fff', padding: 20 },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' },
   sectionHeader: {
     flexDirection: 'row',
@@ -156,7 +163,7 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 20, fontWeight: 'bold', textTransform: 'capitalize' },
   genreSection: { marginVertical: 15 },
   card: {
-    width: 200,
+    width: 330,
     marginRight: 15,
     backgroundColor: '#fff',
     borderRadius: 12,
@@ -180,5 +187,5 @@ const styles = StyleSheet.create({
   cardSubtitle: { fontSize: 12, color: '#555', marginTop: 5 },
 });
 
-export default GenreWiseRestaurants;
+export default RestaurantListByGenre;
 
