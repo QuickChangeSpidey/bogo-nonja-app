@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { API_BASE_URL as API_URL } from '../apiClient';
 
-const API_BASE_URL = "http://localhost:5000/api/locations/query/:search";
+const API_BASE_URL = `${API_URL}/locations/query/:search`;
 
 // 🔹 Async Action to Fetch Locations Based on Search Query
 export const searchLocations = createAsyncThunk(

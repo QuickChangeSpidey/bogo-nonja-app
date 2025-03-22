@@ -19,6 +19,7 @@ import { RootStackParamList } from '../../App';
 import Icon from 'react-native-vector-icons/Entypo';
 import axios from 'axios';
 import Geolocation from '@react-native-community/geolocation';
+import { API_BASE_URL } from '../api/apiClient';
 
 export interface Restaurant {
   id: number;
@@ -115,7 +116,7 @@ const MapScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const getRestaurantData = async (latitude: number, longitude: number) => {
     try {
       // Use your custom client:
-      const response = await axios.get('http://localhost:5000/api/find/nearby', {
+      const response = await axios.get(`${API_BASE_URL}/find/nearby`, {
         params: {
           lat: latitude,
           lng: longitude,
