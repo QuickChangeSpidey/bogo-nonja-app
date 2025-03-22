@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     borderColor: '#28a745',
     borderRadius: 12,
     paddingHorizontal: 12,
-    paddingVertical: Platform.OS === 'ios' ? 10 : 5,
+    paddingVertical: Platform.OS === 'ios' ? 10 : 0,
     marginBottom: 20,
     backgroundColor: '#fff',
     height: 50,
