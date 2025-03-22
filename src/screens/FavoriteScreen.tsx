@@ -144,8 +144,8 @@ const GenreWiseRestaurants = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 0.9, backgroundColor: '#fff', padding: 20 },
-  loadingContainer: { flex: 0.9, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: '#fff', padding: 20 },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
