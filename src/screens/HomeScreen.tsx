@@ -190,34 +190,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     }
   };
 
-  const handleSearch = async () => {
-    if (!searchQuery) {
-      console.warn('Please enter a search query');
-      return;
-    }
-
-    try {
-      const response = await axios.get(
-        `https://maps.googleapis.com/maps/api/geocode/json`,
-        {
-          params: {
-            address: searchQuery,
-            key: GOOGLE_MAPS_API_KEY,
-          },
-        },
-      );
-
-      if (response.data.status === 'OK') {
-        const { lat, lng } = response.data.results[0].geometry.location;
-        setIsSearchFilterVisible(false); // Close modal after search
-      } else {
-        console.warn('Location not found. Please try again.');
-      }
-    } catch (error) {
-      console.error('Error fetching location:', error);
-    }
-  };
-
   useEffect(() => {
     if (city && country) {
       dispatch(fetchDealsByCityAndCountry({ city, country }));
@@ -394,11 +366,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                   fetchSearchSuggestions(text);
                 }}
               />
-              <TouchableOpacity
-                style={styles.searchButton}
-                onPress={() => handleSearch()}>
-                <Text style={styles.applyButtonText}>Search</Text>
-              </TouchableOpacity>
               <FlatList
                 data={searchResults}
                 keyExtractor={item => item.place_id}
@@ -480,11 +447,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 12,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 4,
     borderWidth: 0.5,
     borderColor: '#28a745',
   },

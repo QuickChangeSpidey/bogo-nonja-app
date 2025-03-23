@@ -51,9 +51,9 @@ const RestaurantListByGenre: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [state, setState] = useState<string>('');
   const [country, setCountry] = useState<string>('');
   const GOOGLE_MAPS_API_KEY = 'AIzaSyBxeae0ftXUhPZ8bZWE1-xgaWEkJFKGjek';
-  const [searchQuery, setSearchQuery] = useState(''); 
+  const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
-  
+
   useEffect(() => {
     requestLocationPermission();
   }, []);
@@ -83,7 +83,6 @@ const RestaurantListByGenre: React.FC<HomeScreenProps> = ({ navigation }) => {
       console.warn(err);
     }
   };
-
 
   const fetchSearchSuggestions = async (query: string) => {
     if (!query) {
@@ -151,40 +150,11 @@ const RestaurantListByGenre: React.FC<HomeScreenProps> = ({ navigation }) => {
     }
   };
 
-  const handleSearch = async () => {
-    if (!searchQuery) {
-      console.warn('Please enter a search query');
-      return;
-    }
-
-    try {
-      const response = await axios.get(
-        `https://maps.googleapis.com/maps/api/geocode/json`,
-        {
-          params: {
-            address: searchQuery,
-            key: GOOGLE_MAPS_API_KEY,
-          },
-        },
-      );
-
-      if (response.data.status === 'OK') {
-        const { lat, lng } = response.data.results[0].geometry.location;
-        setIsSearchFilterVisible(false); // Close modal after search
-      } else {
-        console.warn('Location not found. Please try again.');
-      }
-    } catch (error) {
-      console.error('Error fetching location:', error);
-    }
-  };
-
   const getCurrentLocation = () => {
     Geolocation.getCurrentPosition(
       position => {
         const { latitude, longitude } = position.coords;
         setUserLocation({ latitude, longitude });
-        fetchRestaurantData(latitude, longitude);
         fetchLocationDetails(latitude, longitude);
       },
       error => {
@@ -208,22 +178,23 @@ const RestaurantListByGenre: React.FC<HomeScreenProps> = ({ navigation }) => {
       if (data.status === 'OK') {
         // Process the address components to extract city, state, and country
         const addressComponents = data.results[0].address_components;
-        const cityObj = addressComponents.find(component =>
+        const cityObj = addressComponents.find((component:any) =>
           component.types.includes('locality')
         );
-        const stateObj = addressComponents.find(component =>
+        const stateObj = addressComponents.find((component:any) =>
           component.types.includes('administrative_area_level_1')
         );
-        const countryObj = addressComponents.find(component =>
+        const countryObj = addressComponents.find((component:any) =>
           component.types.includes('country')
         );
-
+        fetchRestaurantData(latitude, longitude);
         const city = cityObj ? cityObj.long_name : null;
         const state = stateObj ? stateObj.long_name : null;
         const country = countryObj ? countryObj.long_name : null;
         setCity(city);
         setState(state);
         setCountry(country);
+
       } else {
         console.warn('Geocoding API error:', data.status);
       }
@@ -232,8 +203,6 @@ const RestaurantListByGenre: React.FC<HomeScreenProps> = ({ navigation }) => {
       return null;
     }
   };
-
-
 
   const handleFavorite = (restaurant: Restaurant) => {
     // Implement favorite functionality here
@@ -244,14 +213,12 @@ const RestaurantListByGenre: React.FC<HomeScreenProps> = ({ navigation }) => {
       const response = await axios.get(
         `http://api.bogoninja.com/api/restaurant-locations/query?lat=${latitude}&long=${longitude}`
       );
-      console.log(response.data);
       setData(response.data || { restaurants: {} });
     } catch (error) {
       console.error('Error fetching restaurant data:', error);
       setData({ restaurants: {} });
     }
   };
-
 
   if (!data || Object.keys(data).length === 0) {
     return (
@@ -265,7 +232,7 @@ const RestaurantListByGenre: React.FC<HomeScreenProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', alignSelf: 'flex-end' }}>
+      <View style={{  flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', alignSelf: 'flex-end' }}>
         <Text style={styles.countryStateText}>{city}, {state}, {country}</Text>
         <Icon name="location" size={28} color="#28a745" style={{ margin: 10 }} onPress={() => setIsSearchFilterVisible(true)} />
       </View>
@@ -275,14 +242,12 @@ const RestaurantListByGenre: React.FC<HomeScreenProps> = ({ navigation }) => {
           if (!restaurants || restaurants.length === 0) {
             return null;
           }
-
           return (
             <View key={genre} style={styles.genreSection}>
               <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>{genre}</Text>
                 <Icon name="chevron-right" size={24} color="#28a745" />
               </View>
-
               <FlatList
                 data={restaurants}
                 keyExtractor={(item) => item._id}
@@ -350,11 +315,6 @@ const RestaurantListByGenre: React.FC<HomeScreenProps> = ({ navigation }) => {
                 fetchSearchSuggestions(text);
               }}
             />
-            <TouchableOpacity
-              style={styles.searchButton}
-              onPress={() => handleSearch()}>
-              <Text style={styles.applyButtonText}>Search</Text>
-            </TouchableOpacity>
             <FlatList
               data={searchResults}
               keyExtractor={item => item.place_id}
@@ -429,11 +389,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 12,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 4,
     borderWidth: 0.5,
     borderColor: '#28a745',
   },
@@ -478,12 +433,6 @@ const styles = StyleSheet.create({
   cardTitle: { fontSize: 16, fontWeight: 'bold' },
   cardSubtitle: { fontSize: 12, color: '#555', marginTop: 5 },
   cardCoupon: { fontSize: 12, color: 'green', marginTop: 5 },
-  applyButton: {
-    marginTop: 20,
-    backgroundColor: '#28a745',
-    padding: 10,
-    borderRadius: 5,
-  },
   applyButtonText: {
     textAlign: 'center',
     color: 'white',
@@ -493,12 +442,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
-  },
-  noDataContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
   },
 });
 
