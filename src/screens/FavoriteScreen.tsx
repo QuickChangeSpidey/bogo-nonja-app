@@ -139,10 +139,17 @@ const RestaurantListByGenre: React.FC<HomeScreenProps> = ({ navigation }) => {
             country = component.long_name;
           }
         });
-
+        fetchRestaurantData(
+          response.data.result.geometry.location.lat,
+          response.data.result.geometry.location.lng,
+        );
         setCity(city);
         setState(province);
         setCountry(country);
+        setUserLocation({
+          latitude: response.data.result.geometry.location.lat,
+          longitude: response.data.result.geometry.location.lng,
+        });
         setIsSearchFilterVisible(false);
       }
     } catch (error) {
@@ -213,6 +220,7 @@ const RestaurantListByGenre: React.FC<HomeScreenProps> = ({ navigation }) => {
       const response = await axios.get(
         `http://api.bogoninja.com/api/restaurant-locations/query?lat=${latitude}&long=${longitude}`
       );
+      console.log(response.data);
       setData(response.data || { restaurants: {} });
     } catch (error) {
       console.error('Error fetching restaurant data:', error);
