@@ -35,11 +35,11 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { deals, loading, error } = useSelector((state: RootState) => state.deals);
   const [isSearchFilterVisible, setIsSearchFilterVisible] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(''); // State for search input
-  const [searchResults, setSearchResults] = useState<any[]>([]); // For location suggestions
-  const [city, setCity] = useState<string>(''); // For location suggestions
-  const [state, setState] = useState<string>(''); // For location suggestions
-  const [country, setCountry] = useState<string>(''); // For location suggestions
+  const [searchQuery, setSearchQuery] = useState(''); 
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [city, setCity] = useState<string>(''); 
+  const [state, setState] = useState<string>(''); 
+  const [country, setCountry] = useState<string>(''); 
 
   useEffect(() => {
     requestLocationPermission();
