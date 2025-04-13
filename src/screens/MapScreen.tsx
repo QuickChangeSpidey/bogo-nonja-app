@@ -140,6 +140,7 @@ const MapScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       position => {
         const { latitude, longitude } = position.coords;
         setUserLocation({ latitude, longitude });
+        console.log(latitude,longitude)
         getRestaurantData(latitude, longitude);
         if (mapRef.current) {
           mapRef.current.animateCamera({
@@ -273,7 +274,7 @@ const MapScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                     <TouchableOpacity onPress={() => navigation.navigate('CouponDetails')}>
                       <Text style={styles.calloutLink}>Show Coupons</Text>
                       <Text style={styles.coupon}>
-                        {location.coupons.length} Available
+                        {location?.coupons?.length} Available
                       </Text>
                     </TouchableOpacity>
                   </View>

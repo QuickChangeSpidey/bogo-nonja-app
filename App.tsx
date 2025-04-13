@@ -29,7 +29,6 @@ import RecoveryScreen from './src/screens/RecoveryScreen';
 import QRScannerScreen from './src/screens/QRScannerScreen';
 import MapScreen from './src/screens/MapScreen';
 import CouponDetailsScreen from './src/screens/CouponDetailsScreen';
-// import SearchScreen from './src/screens/SearchScreen';
 import NotificationPermissionScreen from './src/screens/NotificationPermissionScreen';
 import { Provider } from 'react-redux';
 import store from './src/api/redux/store';

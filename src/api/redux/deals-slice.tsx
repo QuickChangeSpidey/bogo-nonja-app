@@ -66,6 +66,7 @@ export const fetchDealsByCityAndCountry = createAsyncThunk<DealsResponse, FetchD
       const response = await apiClient.get<DealsResponse>(`deals/${city}/${country}`);
       return response.data;
     } catch (error: any) {
+      console.log(error)
       if (error.response.status === 404) {
         Alert.alert('', error.response.data.message);
       }
